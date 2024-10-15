@@ -1,0 +1,128 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Consumer {
+  id                       String   @id @default(uuid()) // Unique ID as a string
+  createdAt                DateTime @default(now()) // Created at timestamp
+  updatedAt                DateTime @default(now()) // Updated at timestamp
+  countryCode              String
+  mobileNumber             String
+  otpVerified              Boolean  @default(false) // OTP verification status
+  otpVerificationRequestId String?
+  userRole                 UserRole @relation(fields: [userRoleId], references: [id]) // references `id` of `Profile`
+  userRoleId               String   @unique
+  tokens                   Token[]
+
+  @@unique([countryCode, mobileNumber])
+  @@map("consumers") // Optional: maps this model to the "consumers" table in the database
+}
+
+model OTP {
+  id           String   @id @default(uuid()) // Changed to String
+  requestId    String
+  createdAt    DateTime @default(now())
+  countryCode  String
+  mobileNumber String
+
+  @@map("otps")
+}
+
+model Brand {
+  id        String   @id @default(uuid()) // Unique ID as a string
+  createdAt DateTime @default(now()) // Created at timestamp
+  updatedAt DateTime @default(now()) // Updated at timestamp
+
+  name              String?     @unique
+  description       String? // Optional description of the brand
+  profilePictureUrl String? // Optional URL for the brand's profile picture
+  email             String?
+  isEmailVerified   Boolean     @default(false)
+  // brandAdmin        BrandUser?  @relation("brand_to_admin", fields: [brandAdminId], references: [id])
+  // brandAdminId      String      @unique
+  brandUsers        BrandUser[]
+
+  @@unique([email, isEmailVerified])
+  @@map("brands") // Optional: maps this model to the "consumers" table in the database
+}
+
+model BrandRegistrationCode {
+  id           String   @id @default(uuid()) // Unique ID for each code entry
+  code         String   @unique // Unique registration code
+  countryCode  String // Country code of the admin
+  mobileNumber String // Mobile number of the admin
+  isUsed       Boolean  @default(false) // Mark if the code has been used
+  createdAt    DateTime @default(now()) // Timestamp for code creation
+  expiresAt    DateTime // Code expiration time
+
+  @@unique([countryCode, mobileNumber]) // Ensure one code per admin's mobile number
+  @@map("brand_registration_codes") // Optional: Maps to the DB table name
+}
+
+model Token {
+  id          String     @id @default(uuid())
+  token       String
+  type        TokenType
+  expires     DateTime
+  blacklisted Boolean
+  createdAt   DateTime   @default(now())
+  role        Role
+  consumerId  String?
+  consumer    Consumer?  @relation(fields: [consumerId], references: [id])
+  BrandUser   BrandUser? @relation(fields: [brandUserId], references: [id])
+  brandUserId String?
+
+  @@map("tokens")
+}
+
+enum TokenType {
+  ACCESS
+  REFRESH
+  RESET_PASSWORD
+  VERIFY_EMAIL
+}
+
+model BrandUser {
+  id                       String   @id @default(uuid()) // Unique user ID as a string (UUID)
+  createdAt                DateTime @default(now()) // Created at timestamp
+  updatedAt                DateTime @default(now()) // Updated at timestamp
+  countryCode              String
+  mobileNumber             String
+  otpVerified              Boolean  @default(false) // OTP verification status
+  otpVerificationRequestId String?
+  name                     String? // Name of the user
+  userRole                 UserRole @relation(fields: [userRoleId], references: [id]) // references `id` of `Profile`
+  userRoleId               String   @unique
+  tokens                   Token[]
+  Brand                    Brand    @relation(fields: [brandId], references: [id])
+  brandId                  String
+
+  @@unique([countryCode, mobileNumber])
+  @@map("brand_users")
+}
+
+model UserRole {
+  id        String   @id @default(uuid()) // Unique user ID as a string (UUID)
+  createdAt DateTime @default(now()) // Created at timestamp
+  updatedAt DateTime @default(now()) // Updated at timestamp
+
+  consumer  Consumer?
+  brandUser BrandUser?
+  role      Role       @default(BasicConsumer)
+
+  @@map("user_roles")
+}
+
+enum Role {
+  BrandAdmin
+  BrandPOC
+  BasicConsumer
+}
