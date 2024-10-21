@@ -4,7 +4,8 @@ export const CONSUMER_ROUTES = {
     "verifyOTP": '/verify-otp',
     "login": "/login",
     "loginVerifyOTP": "/login/verify-otp",
-    "getDashboard": "/dashboard"
+    "getDashboard": "/dashboard",
+    "updateProfile": "/:consumerId/profile"
 };
 
 export const BRAND_ROUTES = {
@@ -12,7 +13,10 @@ export const BRAND_ROUTES = {
     "verifyOTP": '/verify-otp',
     "login": "/login",
     "loginVerifyOTP": "/login/verify-otp",
-    "getDashboard": "/dashboard"
+    "getDashboard": "/dashboard",
+    "updateProfile": "/:brandId/profile",
+    "addPOCRequest": "/:brandId/pocs/send-otp",
+    "verifyPOCRequest": "/:brandId/pocs/verify-otp",
 };
 
 export const AUTH_ROUTES = {
@@ -30,3 +34,4 @@ export const OTP_CHANNEL_SMS = 'SMS';
 export const TOKEN_EXPIRED_MESSAGE = 'Token expired';
 export const TOKEN_EXPIRED_ERROR = 'TokenExpiredError';
 export const ACCESS_TOKEN_EXPIRED_STATUS = 440;
+export const PROFILE_PICTURE = 'profilePicture';

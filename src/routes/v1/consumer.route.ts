@@ -3,8 +3,9 @@ import express from 'express';
 import validate from '../../middlewares/validate';
 import { consumerValidation } from '../../validations';
 import { consumerAuthController, consumerController } from '../../controllers';
-import { CONSUMER_ROUTES } from '../../config/constants';
+import { CONSUMER_ROUTES, PROFILE_PICTURE } from '../../config/constants';
 import auth from '../../middlewares/auth';
+import imageUpload from '../../middlewares/image-upload';
 
 const router = express.Router();
 
@@ -24,8 +25,16 @@ router
     .post(validate(consumerValidation.loginVerifyOTP), consumerAuthController.loginVerifyOTP);
 
 router
+    .route(CONSUMER_ROUTES.loginVerifyOTP)
+    .post(validate(consumerValidation.loginVerifyOTP), consumerAuthController.loginVerifyOTP);
+
+router
+    .route(CONSUMER_ROUTES.updateProfile)
+    .put(auth('Consumer:updateProfile'), validate(consumerValidation.updateProfile), imageUpload.optionalUpload(PROFILE_PICTURE), consumerAuthController.updateProfile);
+
+router
     .route(CONSUMER_ROUTES.getDashboard)
-    .get(auth('getDashboard'), consumerController.getDashboard);
+    .get(auth('Consumer:getDashboard'), consumerController.getDashboard);
 
 
 // router

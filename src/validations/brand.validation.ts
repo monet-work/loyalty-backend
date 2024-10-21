@@ -43,10 +43,36 @@ const logout = {
     })
 };
 
+const updateProfile = {
+    body: Joi.object().keys({
+        name: Joi.string().min(1).max(50).required(),
+        description: Joi.string().min(0).max(500)
+    })
+};
+
+const addPOCRequest = {
+    body: Joi.object().keys({
+        countryCode: Joi.string().required(),
+        mobileNumber: Joi.string().required(),
+    })
+};
+
+const verifyPOCRequest = {
+    body: Joi.object().keys({
+        countryCode: Joi.string().required(),
+        mobileNumber: Joi.string().required(),
+        requestId: Joi.string().required(),
+        otp: Joi.string().length(6).required()
+    })
+};
+
 export default {
     verifyOTP,
     signUp,
     login,
     loginVerifyOTP,
-    logout
+    logout,
+    updateProfile,
+    addPOCRequest,
+    verifyPOCRequest
 };

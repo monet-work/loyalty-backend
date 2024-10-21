@@ -41,10 +41,18 @@ const logout = {
     })
 };
 
+const updateProfile = {
+    body: Joi.object().keys({
+        name: Joi.string().min(1).max(50).required(),
+        description: Joi.string().min(0).max(500)
+    })
+}
+
 export default {
     verifyOTP,
     signUp,
     login,
     loginVerifyOTP,
-    logout
+    logout,
+    updateProfile
 };

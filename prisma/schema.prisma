@@ -16,6 +16,9 @@ model Consumer {
   updatedAt                DateTime @default(now()) // Updated at timestamp
   countryCode              String
   mobileNumber             String
+  name                     String?
+  description              String?
+  profilePictureURL        String?
   otpVerified              Boolean  @default(false) // OTP verification status
   otpVerificationRequestId String?
   userRole                 UserRole @relation(fields: [userRoleId], references: [id]) // references `id` of `Profile`
@@ -43,7 +46,7 @@ model Brand {
 
   name              String?     @unique
   description       String? // Optional description of the brand
-  profilePictureUrl String? // Optional URL for the brand's profile picture
+  profilePictureURL String? // Optional URL for the brand's profile picture
   email             String?
   isEmailVerified   Boolean     @default(false)
   // brandAdmin        BrandUser?  @relation("brand_to_admin", fields: [brandAdminId], references: [id])
@@ -102,7 +105,7 @@ model BrandUser {
   userRole                 UserRole @relation(fields: [userRoleId], references: [id]) // references `id` of `Profile`
   userRoleId               String   @unique
   tokens                   Token[]
-  Brand                    Brand    @relation(fields: [brandId], references: [id])
+  brand                    Brand    @relation(fields: [brandId], references: [id])
   brandId                  String
 
   @@unique([countryCode, mobileNumber])

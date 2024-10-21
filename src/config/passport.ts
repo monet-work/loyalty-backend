@@ -45,7 +45,8 @@ const jwtBrandVerify: VerifyCallback = async (payload, done) => {
         console.log(payload.sub);
         const user = await prisma.brandUser.findUnique({
             include: {
-                userRole: true
+                userRole: true,
+                brand: true
             },
             where: { id: payload.sub }
         });

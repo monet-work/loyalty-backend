@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
 import compression from 'compression';
 import cors from 'cors';
@@ -15,6 +15,7 @@ import { errorConverter, errorHandler } from './middlewares/error';
 import ApiError from './utils/ApiError';
 import { BRAND_ROUTES, CONSUMER_ROUTES, JWT_STRATEGY_BRAND, JWT_STRATEGY_CONSUMER, TOKEN_EXPIRED_MESSAGE } from './config/constants';
 import { jwtBrandStrategy, jwtStrategy } from './config/passport';
+// import { NextFunction } from 'connect';
 
 const app = express();
 
@@ -26,11 +27,21 @@ if (config.env !== 'test') {
 // set security HTTP headers
 app.use(helmet());
 
-// parse json request body
-app.use(express.json());
+const conditionalJsonMiddleware = (req: Request, res: Response, next: NextFunction) => {
+  if (req.is('application/json')) {
+    // parse json request body
+    express.json()(req, res, next); // Apply express.json() for JSON requests
+  } else if (req.is('application/x-www-form-urlencoded')) {
+    // parse urlencoded request body
+    express.urlencoded({ extended: true })(req, res, next); // Apply express.urlencoded() for URL-encoded form data
+  } else if (req.is('multipart/form-data')) {
+    next(); // Apply multer for multipart/form-data (assuming single file upload with field name 'image')
+  } else {
+    next(); // Skip middleware if the Content-Type is not recognized
+  }
+}
 
-// parse urlencoded request body
-app.use(express.urlencoded({ extended: true }));
+app.use(conditionalJsonMiddleware);
 
 // sanitize request data
 app.use(xss());

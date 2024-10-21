@@ -59,7 +59,33 @@ const insertConsumer = async <Key extends keyof Consumer>(
     return result.consumer;
 };
 
+const updateConsumer = async <Key extends keyof Consumer>(
+    id: string,
+    name: string,
+    description: string,
+    profilePictureURL: string | null,
+    keys: Key[] = [
+        'id', 'name', 'description', 'profilePictureURL'
+    ] as Key[]
+): Promise<Pick<Consumer, Key> | null> => {
+    // create role for this user in the user role table
+    // insert user into the consumer table
+    const consumer = await prisma.consumer.update({
+        data: {
+            name: name,
+            description: description,
+            profilePictureURL: profilePictureURL
+        },
+        where: {
+            id: id
+        }
+    })
+
+    return consumer;
+};
+
 export default {
     getConsumerByMobileNumber,
-    insertConsumer
+    insertConsumer,
+    updateConsumer
 };

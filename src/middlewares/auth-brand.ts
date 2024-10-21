@@ -4,10 +4,10 @@ import httpStatus from 'http-status';
 import ApiError from '../utils/ApiError';
 import { allRightsForUser, roleRights, roles } from '../config/roles';
 import { NextFunction, Request, Response } from 'express';
-import { BrandUser, Consumer, UserRole } from '@prisma/client';
+import { Brand, BrandUser, Consumer, UserRole } from '@prisma/client';
 import { ACCESS_TOKEN_EXPIRED_STATUS, JWT_STRATEGY_BRAND, JWT_STRATEGY_CONSUMER, TOKEN_EXPIRED_ERROR } from '../config/constants';
 
-type BrandWithUserRole = BrandUser & { userRole: UserRole | null };
+type BrandWithUserRole = BrandUser & { userRole: UserRole | null, brand: Brand | null };
 
 const verifyCallback =
     (
@@ -21,6 +21,11 @@ const verifyCallback =
                 console.error('Authentication error:', err);
                 return reject(new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Internal server error during authentication.'));
             }
+
+            // console.log(req.originalUrl);
+            // console.log(req.path);
+            const match = req.originalUrl.match(/\/v1\/brands\/([\w-]+)\/profile$/);
+            // console.log("match: ", match);
 
             if (!user) {
                 console.warn('Authentication failed:', info);
@@ -37,21 +42,49 @@ const verifyCallback =
                 }
 
                 return reject(new ApiError(status, message));
-            }
-
-            req.user = user;
-
-            if (requiredRights.length) {
-                const userRights = allRightsForUser([user.userRole!.role]) ?? [];
-                const hasRequiredRights = requiredRights.every((requiredRight) =>
-                    userRights.includes(requiredRight)
-                );
-                if (!hasRequiredRights) {
-                    return reject(new ApiError(httpStatus.FORBIDDEN, 'Forbidden'));
+            } else if (!match) {
+                // check if the name, description and profilePictureURL exists or not
+                if (!user.brand?.name || !user.brand?.profilePictureURL) {
+                    return reject(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, "Please complete your profile first."));
                 }
-            }
 
-            resolve();
+                req.user = user;
+
+                if (requiredRights.length) {
+                    const userRights = allRightsForUser([user.userRole!.role]) ?? [];
+                    const hasRequiredRights = requiredRights.every((requiredRight) =>
+                        userRights.includes(requiredRight)
+                    );
+                    if (!hasRequiredRights) {
+                        return reject(new ApiError(httpStatus.FORBIDDEN, 'Forbidden'));
+                    }
+                }
+
+                resolve();
+            } else {
+                console.log("req.body: ", req.body);
+                if (user.brand?.id !== match[1]) {
+                    return reject(new ApiError(httpStatus.UNAUTHORIZED, 'Unauthorized access'));
+                }
+
+                if (user.brand?.name && user.brand?.profilePictureURL) {
+                    return reject(new ApiError(httpStatus.CONFLICT, 'Profile already completed'));
+                }
+
+                req.user = user;
+
+                if (requiredRights.length) {
+                    const userRights = allRightsForUser([user.userRole!.role]) ?? [];
+                    const hasRequiredRights = requiredRights.every((requiredRight) =>
+                        userRights.includes(requiredRight)
+                    );
+                    if (!hasRequiredRights) {
+                        return reject(new ApiError(httpStatus.FORBIDDEN, 'Forbidden'));
+                    }
+                }
+
+                resolve();
+            }
         };
 
 const authBrand =

@@ -4,7 +4,7 @@ import catchAsync from '../utils/catchAsync';
 import { consumerService, otpService } from '../services';
 import { sendOTP } from '../utils/otpless';
 import tokenService from '../services/token.service';
-import { Role } from '@prisma/client';
+import { Consumer, Role } from '@prisma/client';
 import authService from '../services/auth.service';
 
 const signUp = catchAsync(async (req, res) => {
@@ -147,9 +147,33 @@ const login = catchAsync(async (req, res) => {
     }
 });
 
+const updateProfile = catchAsync(async (req, res) => {
+    const { name, description } = req.body;
+
+    const fileUrl = req.file ? (req.file as Express.MulterS3.File).location : null; // Optional file URL
+
+    const consumer = await consumerService.updateConsumer((req.user as Consumer).id, name, description, fileUrl);
+
+    if (consumer) {
+        res.status(httpStatus.OK)
+            .send({
+                consumer: consumer,
+                message: "Profile updated successfully"
+            });
+        return;
+    }
+
+    res.status(httpStatus.BAD_REQUEST)
+        .send({
+            message: "Failed to update profile"
+        });
+    return;
+});
+
 export default {
     signUp,
     verifyOTP,
     login,
-    loginVerifyOTP
+    loginVerifyOTP,
+    updateProfile
 };

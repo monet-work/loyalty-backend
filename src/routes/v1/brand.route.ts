@@ -3,9 +3,10 @@ import express from 'express';
 import validate from '../../middlewares/validate';
 import { brandValidation } from '../../validations';
 import { brandAuthController, brandController } from '../../controllers';
-import { BRAND_ROUTES } from '../../config/constants';
+import { BRAND_ROUTES, PROFILE_PICTURE } from '../../config/constants';
 import auth from '../../middlewares/auth';
 import authBrand from '../../middlewares/auth-brand';
+import imageUpload from '../../middlewares/image-upload';
 
 const router = express.Router();
 
@@ -26,8 +27,19 @@ router
 
 router
     .route(BRAND_ROUTES.getDashboard)
-    .get(authBrand('getDashboard'), brandController.getDashboard);
+    .get(authBrand('Brand:getDashboard'), brandController.getDashboard);
 
+router
+    .route(BRAND_ROUTES.updateProfile)
+    .put(authBrand('Brand:updateProfile'), validate(brandValidation.updateProfile), imageUpload.upload.single(PROFILE_PICTURE), brandAuthController.updateProfile);
+
+router
+    .route(BRAND_ROUTES.addPOCRequest)
+    .post(authBrand('Brand:addPOCRequest'), validate(brandValidation.addPOCRequest), brandAuthController.addPOCRequest);
+
+router
+    .route(BRAND_ROUTES.verifyPOCRequest)
+    .post(authBrand('Brand:verifyPOCRequest'), validate(brandValidation.verifyPOCRequest), brandAuthController.verifyPOCRequest);
 
 // router
 //     .route('/:customerId/points')

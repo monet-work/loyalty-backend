@@ -4,7 +4,7 @@ import catchAsync from '../utils/catchAsync';
 import { brandRegCodeService, brandService, otpService } from '../services';
 import { sendOTP } from '../utils/otpless';
 import tokenService from '../services/token.service';
-import { Role } from '@prisma/client';
+import { Brand, BrandUser, Role } from '@prisma/client';
 
 const signUp = catchAsync(async (req, res) => {
     const { countryCode, mobileNumber, regCode } = req.body;
@@ -169,9 +169,107 @@ const login = catchAsync(async (req, res) => {
     }
 });
 
+const updateProfile = catchAsync(async (req, res) => {
+    const { name, description } = req.body;
+
+    if (!req.file) {
+        return res.status(400).json({ message: 'Please upload a valid image file.' });
+    }
+
+    const fileUrl = (req.file as Express.MulterS3.File).location; // Optional file URL
+
+    const brand = await brandService.updateBrand(((req.user as any).brand as Brand).id, name, description, fileUrl);
+
+    if (brand) {
+        res.status(httpStatus.OK)
+            .send({
+                brand: brand,
+                message: "Profile updated successfully"
+            });
+        return;
+    }
+
+    res.status(httpStatus.BAD_REQUEST)
+        .send({
+            message: "Failed to update profile"
+        });
+    return;
+});
+
+const addPOCRequest = catchAsync(async (req, res) => {
+    const { countryCode, mobileNumber } = req.body;
+
+    const brandUser = await brandService.getBrandUserByMobileNumber(countryCode, mobileNumber);
+
+    if (brandUser) {
+        res.status(httpStatus.CONFLICT)
+            .send({
+                message: "Phone number already exists"
+            });
+        return;
+    }
+
+    // send otp to consumer
+    const otplessRequestData = await sendOTP(countryCode, mobileNumber);
+    // store it in redis server
+    if (otplessRequestData.requestId) {
+        await otpService.insertOTP(countryCode, mobileNumber, otplessRequestData.requestId);
+        // store it in database
+        res.status(otplessRequestData.status)
+            .send({
+                requestId: otplessRequestData.requestId,
+                message: "OTP sent successfully"
+            });
+        return;
+    }
+
+    res.status(otplessRequestData.status)
+        .send({
+            message: otplessRequestData.message
+        });
+    return;
+});
+
+const verifyPOCRequest = catchAsync(async (req, res) => {
+    const { countryCode, mobileNumber, requestId, otp } = req.body;
+
+    const otpData = await otpService.verifyOTP(countryCode, mobileNumber, requestId, otp);
+    const brandId = ((req.user as any).brand as Brand).id;
+
+    if (otpData) {
+        // otp is verified successfully for poc addition
+        // insert brand poc into the database
+        const brandPOC = await brandService.insertBrandPOC(countryCode, mobileNumber, requestId, brandId);
+
+        if (brandPOC) {
+            // brand poc has been created successfully
+            res.status(httpStatus.OK)
+                .send({
+                    message: "Brand POC Created successfully."
+                });
+            return;
+        } else {
+            res.status(httpStatus.INTERNAL_SERVER_ERROR)
+                .send({
+                    message: "Failed to add poc."
+                });
+            return;
+        }
+    } else {
+        res.status(httpStatus.BAD_REQUEST)
+            .send({
+                message: "OTP verification failed."
+            });
+        return;
+    }
+});
+
 export default {
     signUp,
     verifyOTP,
     login,
-    loginVerifyOTP
+    loginVerifyOTP,
+    updateProfile,
+    addPOCRequest,
+    verifyPOCRequest
 };

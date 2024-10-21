@@ -22,6 +22,8 @@ const verifyCallback =
                 return reject(new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Internal server error during authentication.'));
             }
 
+            const match = req.originalUrl.match(/\/v1\/consumers\/([\w-]+)\/profile$/);
+
             if (!user) {
                 console.warn('Authentication failed:', info);
 
@@ -37,22 +39,49 @@ const verifyCallback =
                 }
 
                 return reject(new ApiError(status, message));
-            }
-
-            req.user = user;
-
-            if (requiredRights.length) {
-                const userRights = allRightsForUser([user.userRole!.role]) ?? [];
-                const hasRequiredRights = requiredRights.every((requiredRight) =>
-                    userRights.includes(requiredRight)
-                );
-                if (!hasRequiredRights) {
-                    return reject(new ApiError(httpStatus.FORBIDDEN, 'Forbidden'));
+            } else if (!match) {
+                // check if the name, description and profilePictureURL exists or not
+                if (!user.name) {
+                    return reject(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, "Please complete your profile first."));
                 }
-            }
 
-            resolve();
-        };
+                req.user = user;
+
+                if (requiredRights.length) {
+                    const userRights = allRightsForUser([user.userRole!.role]) ?? [];
+                    const hasRequiredRights = requiredRights.every((requiredRight) =>
+                        userRights.includes(requiredRight)
+                    );
+                    if (!hasRequiredRights) {
+                        return reject(new ApiError(httpStatus.FORBIDDEN, 'Forbidden'));
+                    }
+                }
+
+                resolve();
+            } else {
+                // it did match with the update profile
+                // check if the user already has the entire profile setup or not
+                if (user.name) {
+                    // profile already completed
+                    return reject(new ApiError(httpStatus.CONFLICT, 'Profile already completed'));
+                }
+
+                // allow the user to update the profile
+                req.user = user;
+
+                if (requiredRights.length) {
+                    const userRights = allRightsForUser([user.userRole!.role]) ?? [];
+                    const hasRequiredRights = requiredRights.every((requiredRight) =>
+                        userRights.includes(requiredRight)
+                    );
+                    if (!hasRequiredRights) {
+                        return reject(new ApiError(httpStatus.FORBIDDEN, 'Forbidden'));
+                    }
+                }
+
+                resolve();
+            }
+        }
 
 const auth =
     (...requiredRights: string[]) =>
@@ -67,5 +96,6 @@ const auth =
                 .then(() => next())
                 .catch((err) => next(err));
         };
+
 
 export default auth;
