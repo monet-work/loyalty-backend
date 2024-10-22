@@ -1,8 +1,8 @@
 /* eslint-disable prettier/prettier */
 import httpStatus from 'http-status';
 import catchAsync from '../utils/catchAsync';
-import { brandRegCodeService, brandService, otpService } from '../services';
-import { sendOTP } from '../utils/otpless';
+import { brandRegCodeService, brandService, emailService, otpService } from '../services';
+import { sendEmail, sendOTP } from '../utils/otpless';
 import tokenService from '../services/token.service';
 import { Brand, BrandUser, Role } from '@prisma/client';
 
@@ -264,6 +264,76 @@ const verifyPOCRequest = catchAsync(async (req, res) => {
     }
 });
 
+const sendEmailRequest = catchAsync(async (req, res) => {
+    const { email } = req.body;
+
+    const isEmailVerified = ((req.user as any).brand as Brand).isEmailVerified;
+
+    if (!isEmailVerified) {
+        // send otp to brand
+        const otplessRequestData = await sendEmail(email);
+
+        if (otplessRequestData.requestId) {
+            await emailService.insertEmail(email, otplessRequestData.requestId);
+            // store it in database
+            res.status(otplessRequestData.status)
+                .send({
+                    requestId: otplessRequestData.requestId,
+                    message: "OTP sent successfully"
+                });
+            return;
+        }
+
+        res.status(otplessRequestData.status)
+            .send({
+                message: otplessRequestData.message
+            });
+        return;
+    } else {
+        res.status(httpStatus.CONFLICT)
+            .send({
+                message: "Email already verified."
+            });
+        return;
+    }
+});
+
+const verifyEmailRequest = catchAsync(async (req, res) => {
+    const { email, requestId, otp } = req.body;
+
+    const otpData = await emailService.verifyEmail(email, requestId, otp);
+
+    const brandId = ((req.user as any).brand as Brand).id;
+
+    if (otpData) {
+        // otp is verified successfully for signup
+        // insert consumer into the database
+        const brand = await brandService.updateEmailVerified(brandId, email, requestId);
+
+        if (brand) {
+            // brand's email has been verified successfully
+            res.status(httpStatus.OK)
+                .send({
+                    message: "Email verified successfully.",
+                    brand
+                });
+            return;
+        } else {
+            res.status(httpStatus.INTERNAL_SERVER_ERROR)
+                .send({
+                    message: "Failed to verify email. Try again."
+                });
+            return;
+        }
+    } else {
+        res.status(httpStatus.BAD_REQUEST)
+            .send({
+                message: "OTP verification failed."
+            });
+        return;
+    }
+});
+
 export default {
     signUp,
     verifyOTP,
@@ -271,5 +341,7 @@ export default {
     loginVerifyOTP,
     updateProfile,
     addPOCRequest,
-    verifyPOCRequest
+    verifyPOCRequest,
+    sendEmailRequest,
+    verifyEmailRequest
 };

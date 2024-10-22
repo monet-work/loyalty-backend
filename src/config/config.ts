@@ -32,7 +32,9 @@ const envVarsSchema = Joi.object()
     OTPLESS_CLIENT_ID: Joi.string().description('otpless client id'),
     OTPLESS_CLIENT_SECRET: Joi.string().description('otpless client secret'),
     OTPLESS_SEND_OTP_URL: Joi.string().description('otpless send otp url'),
-    OTPLESS_VERIFY_OTP_URL: Joi.string().description('otpless verify url')
+    OTPLESS_VERIFY_OTP_URL: Joi.string().description('otpless verify otp url'),
+    OTPLESS_SEND_EMAIL_URL: Joi.string().description('otpless send email url'),
+    OTPLESS_VERIFY_EMAIL_URL: Joi.string().description('otpless verify email url'),
   })
   .unknown();
 
@@ -71,5 +73,7 @@ export default {
   otplessClientId: envVars.OTPLESS_CLIENT_ID,
   otplessClientSecret: envVars.OTPLESS_CLIENT_SECRET,
   otplessSendOTPUrl: envVars.OTPLESS_SEND_OTP_URL,
-  otplessVerifyOTPUrl: envVars.OTPLESS_VERIFY_OTP_URL
+  otplessVerifyOTPUrl: envVars.OTPLESS_VERIFY_OTP_URL,
+  otplessSendEmailUrl: envVars.OTPLESS_SEND_EMAIL_URL,
+  otplessVerifyEmailUrl: envVars.OTPLESS_VERIFY_EMAIL_URL
 };

@@ -2,7 +2,7 @@
 import { Role } from '@prisma/client';
 
 const allRoles = {
-  [Role.BrandAdmin]: ["Brand:getDashboard", "Brand:updateProfile", "Brand:addPOCRequest", "Brand:verifyPOCRequest"],
+  [Role.BrandAdmin]: ["Brand:getDashboard", "Brand:updateProfile", "Brand:addPOCRequest", "Brand:verifyPOCRequest", "Brand:sendEmailRequest", "Brand:verifyEmailRequest"],
   [Role.BrandPOC]: ["Brand:getDashboard"],
   [Role.BasicConsumer]: ["Consumer:getDashboard", "Consumer:updateProfile"],
 };

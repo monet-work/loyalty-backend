@@ -1,66 +1,82 @@
-import nodemailer from 'nodemailer';
-import config from '../config/config';
-import logger from '../config/logger';
+/* eslint-disable prettier/prettier */
+import { Email } from '@prisma/client';
+import httpStatus from 'http-status';
+import prisma from '../client';
+import ApiError from '../utils/ApiError';
+import { verifyEmail as otplessVerifyEmail } from '../utils/otpless';
 
-const transport = nodemailer.createTransport(config.email.smtp);
-/* istanbul ignore next */
-if (config.env !== 'test') {
-  transport
-    .verify()
-    .then(() => logger.info('Connected to email server'))
-    .catch(() =>
-      logger.warn(
-        'Unable to connect to email server. Make sure you have configured the SMTP options in .env'
-      )
-    );
-}
+const insertEmail = async <Key extends keyof Email>(
+  email: string,
+  otplessRequestId: string,
+  keys: Key[] = [
+    'email', 'otp', 'expiresAt'
+  ] as Key[]
+): Promise<Pick<Email, Key> | null> => {
+  try {
+    const emailRow = await prisma.email.create({
+      data: {
+        requestId: otplessRequestId,
+        email: email
+      }
+    });
 
-/**
- * Send an email
- * @param {string} to
- * @param {string} subject
- * @param {string} text
- * @returns {Promise}
- */
-const sendEmail = async (to: string, subject: string, text: string) => {
-  const msg = { from: config.email.from, to, subject, text };
-  await transport.sendMail(msg);
+    return emailRow;
+  } catch (error) {
+    console.error(error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Internal Server Error');
+  }
 };
 
-/**
- * Send reset password email
- * @param {string} to
- * @param {string} token
- * @returns {Promise}
- */
-const sendResetPasswordEmail = async (to: string, token: string) => {
-  const subject = 'Reset password';
-  // replace this url with the link to the reset password page of your front-end app
-  const resetPasswordUrl = `http://link-to-app/reset-password?token=${token}`;
-  const text = `Dear user,
-To reset your password, click on this link: ${resetPasswordUrl}
-If you did not request any password resets, then ignore this email.`;
-  await sendEmail(to, subject, text);
-};
+const verifyEmail = async <Key extends keyof Email>(
+  email: string,
+  requestId: string,
+  otp: string,
+  keys: Key[] = [
+    'email', 'otp', 'expiresAt'
+  ] as Key[]
+): Promise<Pick<Email, Key> | null> => {
+  try {
+    // console.log(requestId,
+    //     countryCode,
+    //     mobileNumber);
+    const emailRow = await prisma.email.findFirst({
+      where: {
+        requestId: requestId,
+        email: email
+      }
+    });
 
-/**
- * Send verification email
- * @param {string} to
- * @param {string} token
- * @returns {Promise}
- */
-const sendVerificationEmail = async (to: string, token: string) => {
-  const subject = 'Email Verification';
-  // replace this url with the link to the email verification page of your front-end app
-  const verificationEmailUrl = `http://link-to-app/verify-email?token=${token}`;
-  const text = `Dear user,
-To verify your email, click on this link: ${verificationEmailUrl}`;
-  await sendEmail(to, subject, text);
+    if (!emailRow) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'OTP Verification Failed.');
+    }
+
+    const otplessVerifyResponse = await otplessVerifyEmail("", "", requestId, otp);
+
+    if (!otplessVerifyResponse.isOTPVerified) {
+      throw new ApiError(otplessVerifyResponse.status, otplessVerifyResponse.message);
+    }
+
+    // otp verified successfully
+    // remove other entries for this user
+    // try {
+    //     await prisma.oTP.deleteMany({
+    //         where: {
+    //             countryCode: countryCode,
+    //             mobileNumber: mobileNumber
+    //         }
+    //     });
+    // } catch (err) {
+    //     console.error(err);
+    // }
+
+    return emailRow;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 };
 
 export default {
-  transport,
-  sendEmail,
-  sendResetPasswordEmail,
-  sendVerificationEmail
+  insertEmail,
+  verifyEmail
 };

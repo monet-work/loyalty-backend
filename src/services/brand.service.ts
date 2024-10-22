@@ -164,9 +164,40 @@ const insertBrandPOC = async <Key extends keyof BrandUser>(
     return result.brandPOC;
 }
 
+// updateEmailVerified(brandId, email, requestId)
+const updateEmailVerified = async <Key extends keyof Brand>(
+    brandId: string,
+    email: string,
+    requestId: string,
+    keys: Key[] = [
+        'id'
+    ] as Key[]
+): Promise<Pick<Brand, Key> | null> => {
+    // create role for this user in the user role table
+    // insert user into the consumer table
+    // Second query: Use the userId from the previous query to create a post
+    const brand = await prisma.brand.update({
+        data: {
+            email: email,
+            isEmailVerified: true,
+            emailRequestId: requestId
+        },
+        where: {
+            id: brandId
+        }
+    });
+
+    if (!brand) {
+        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Failed to verify brand's email.");
+    }
+
+    return brand;
+};
+
 export default {
     getBrandUserByMobileNumber,
     insertBrand,
     updateBrand,
-    insertBrandPOC
+    insertBrandPOC,
+    updateEmailVerified
 };

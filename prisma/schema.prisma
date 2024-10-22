@@ -11,19 +11,20 @@ datasource db {
 }
 
 model Consumer {
-  id                       String   @id @default(uuid()) // Unique ID as a string
-  createdAt                DateTime @default(now()) // Created at timestamp
-  updatedAt                DateTime @default(now()) // Updated at timestamp
+  id                       String           @id @default(uuid()) // Unique ID as a string
+  createdAt                DateTime         @default(now()) // Created at timestamp
+  updatedAt                DateTime         @default(now()) // Updated at timestamp
   countryCode              String
   mobileNumber             String
   name                     String?
   description              String?
   profilePictureURL        String?
-  otpVerified              Boolean  @default(false) // OTP verification status
+  otpVerified              Boolean          @default(false) // OTP verification status
   otpVerificationRequestId String?
-  userRole                 UserRole @relation(fields: [userRoleId], references: [id]) // references `id` of `Profile`
-  userRoleId               String   @unique
+  userRole                 UserRole         @relation(fields: [userRoleId], references: [id]) // references `id` of `Profile`
+  userRoleId               String           @unique
   tokens                   Token[]
+  consumerPoints           ConsumerPoints[]
 
   @@unique([countryCode, mobileNumber])
   @@map("consumers") // Optional: maps this model to the "consumers" table in the database
@@ -39,19 +40,30 @@ model OTP {
   @@map("otps")
 }
 
+model Email {
+  id        String   @id @default(uuid()) // Changed to String
+  requestId String
+  createdAt DateTime @default(now())
+  email     String
+
+  @@map("emails")
+}
+
 model Brand {
   id        String   @id @default(uuid()) // Unique ID as a string
   createdAt DateTime @default(now()) // Created at timestamp
   updatedAt DateTime @default(now()) // Updated at timestamp
 
-  name              String?     @unique
+  name              String?          @unique
   description       String? // Optional description of the brand
   profilePictureURL String? // Optional URL for the brand's profile picture
   email             String?
-  isEmailVerified   Boolean     @default(false)
+  isEmailVerified   Boolean          @default(false)
+  emailRequestId    String?
   // brandAdmin        BrandUser?  @relation("brand_to_admin", fields: [brandAdminId], references: [id])
   // brandAdminId      String      @unique
   brandUsers        BrandUser[]
+  consumerPoints    ConsumerPoints[]
 
   @@unique([email, isEmailVerified])
   @@map("brands") // Optional: maps this model to the "consumers" table in the database
@@ -110,6 +122,22 @@ model BrandUser {
 
   @@unique([countryCode, mobileNumber])
   @@map("brand_users")
+}
+
+model ConsumerPoints {
+  id         String   @id @default(uuid())
+  consumerId String
+  brandId    String
+  points     Int      @default(0)
+  expiryDate DateTime
+  createdAt  DateTime @default(now())
+
+  // Relations
+  consumer Consumer @relation(fields: [consumerId], references: [id])
+  brand    Brand    @relation(fields: [brandId], references: [id])
+
+  @@index([consumerId, brandId])
+  @@map("consumer_points")
 }
 
 model UserRole {

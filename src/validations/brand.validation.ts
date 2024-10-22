@@ -66,6 +66,20 @@ const verifyPOCRequest = {
     })
 };
 
+const sendEmailRequest = {
+    body: Joi.object().keys({
+        email: Joi.string().email().required()
+    })
+};
+
+const verifyEmailRequest = {
+    body: Joi.object().keys({
+        email: Joi.string().email().required(),
+        requestId: Joi.string().required(),
+        otp: Joi.string().length(6).required()
+    })
+};
+
 export default {
     verifyOTP,
     signUp,
@@ -74,5 +88,7 @@ export default {
     logout,
     updateProfile,
     addPOCRequest,
-    verifyPOCRequest
+    verifyPOCRequest,
+    sendEmailRequest,
+    verifyEmailRequest
 };

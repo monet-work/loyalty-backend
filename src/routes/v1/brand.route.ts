@@ -38,8 +38,16 @@ router
     .post(authBrand('Brand:addPOCRequest'), validate(brandValidation.addPOCRequest), brandAuthController.addPOCRequest);
 
 router
-    .route(BRAND_ROUTES.verifyPOCRequest)
-    .post(authBrand('Brand:verifyPOCRequest'), validate(brandValidation.verifyPOCRequest), brandAuthController.verifyPOCRequest);
+    .route(BRAND_ROUTES.addPOCRequest)
+    .post(authBrand('Brand:addPOCRequest'), validate(brandValidation.addPOCRequest), brandAuthController.addPOCRequest);
+
+router
+    .route(BRAND_ROUTES.sendEmailRequest)
+    .post(authBrand('Brand:sendEmailRequest'), validate(brandValidation.sendEmailRequest), brandAuthController.sendEmailRequest);
+
+router
+    .route(BRAND_ROUTES.verifyEmailRequest)
+    .post(authBrand('Brand:verifyEmailRequest'), validate(brandValidation.verifyEmailRequest), brandAuthController.verifyEmailRequest);
 
 // router
 //     .route('/:customerId/points')
