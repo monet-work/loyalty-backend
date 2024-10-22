@@ -29,7 +29,7 @@ const verifyCallback =
 
                 // Check for token expiry or other issues using the `info` object
                 let message = 'Unauthorized access.';
-                let status = httpStatus.UNAUTHORIZED;
+                let status: any = httpStatus.UNAUTHORIZED;
                 // console.log("info.name: ", info.name);
                 if (info && info.name === TOKEN_EXPIRED_ERROR) {
                     message = 'Token has expired. Refreshing...';
