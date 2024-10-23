@@ -77,7 +77,8 @@ const verifyOTP = catchAsync(async (req, res) => {
             res.status(httpStatus.OK)
                 .send({
                     message: "OTP verified successfully.",
-                    tokens: tokens
+                    tokens: tokens,
+                    id: brandAdmin.brandId
                 });
             return;
         } else {
@@ -116,7 +117,8 @@ const loginVerifyOTP = catchAsync(async (req, res) => {
             res.status(httpStatus.OK)
                 .send({
                     message: "OTP verified successfully.",
-                    tokens: tokens
+                    tokens: tokens,
+                    id: brandUser.brandId
                 });
             return;
         } else {

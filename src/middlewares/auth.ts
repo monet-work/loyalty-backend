@@ -59,6 +59,9 @@ const verifyCallback =
 
                 resolve();
             } else {
+                if (user.id !== match[1]) {
+                    return reject(new ApiError(httpStatus.UNAUTHORIZED, 'Unauthorized access'));
+                }
                 // it did match with the update profile
                 // check if the user already has the entire profile setup or not
                 if (user.name) {

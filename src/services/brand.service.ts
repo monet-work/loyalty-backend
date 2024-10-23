@@ -25,7 +25,8 @@ const insertBrand = async <Key extends keyof BrandUser>(
     requestId: string,
     regCode: string,
     keys: Key[] = [
-        'id'
+        'id',
+        'brandId'
     ] as Key[]
 ): Promise<Pick<BrandUser, Key> | null> => {
     // create role for this user in the user role table

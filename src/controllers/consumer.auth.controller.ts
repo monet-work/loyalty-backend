@@ -58,7 +58,8 @@ const verifyOTP = catchAsync(async (req, res) => {
             res.status(httpStatus.OK)
                 .send({
                     message: "OTP verified successfully.",
-                    tokens: tokens
+                    tokens: tokens,
+                    id: consumer.id
                 });
             return;
         } else {
@@ -94,7 +95,8 @@ const loginVerifyOTP = catchAsync(async (req, res) => {
             res.status(httpStatus.OK)
                 .send({
                     message: "OTP verified successfully.",
-                    tokens: tokens
+                    tokens: tokens,
+                    id: consumer.id
                 });
             return;
         } else {
