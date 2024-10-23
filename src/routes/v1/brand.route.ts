@@ -49,6 +49,10 @@ router
     .route(BRAND_ROUTES.verifyEmailRequest)
     .post(authBrand('Brand:verifyEmailRequest'), validate(brandValidation.verifyEmailRequest), brandAuthController.verifyEmailRequest);
 
+router
+    .route(BRAND_ROUTES.updateBusinessInfo)
+    .put(authBrand('Brand:updateBusinessInfo'), validate(brandValidation.updateBusinessInfo), brandController.updateBusinessInfo);
+
 // router
 //     .route('/:customerId/points')
 //     .get(auth('findPoints'), validate(customerValidation.findPoints), customerController.findPoints);

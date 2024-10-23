@@ -5,7 +5,7 @@ import ApiError from '../utils/ApiError';
 import { allRightsForUser, roleRights, roles } from '../config/roles';
 import { NextFunction, Request, Response } from 'express';
 import { Brand, BrandUser, Consumer, UserRole } from '@prisma/client';
-import { ACCESS_TOKEN_EXPIRED_STATUS, EMAIL_VERIFICATION_REQUIRED_STATUS, JWT_STRATEGY_BRAND, JWT_STRATEGY_CONSUMER, TOKEN_EXPIRED_ERROR } from '../config/constants';
+import { ACCESS_TOKEN_EXPIRED_STATUS, BUSINESS_INFO_REQUIRED_STATUS, EMAIL_VERIFICATION_REQUIRED_STATUS, JWT_STRATEGY_BRAND, JWT_STRATEGY_CONSUMER, TOKEN_EXPIRED_ERROR } from '../config/constants';
 
 type BrandWithUserRole = BrandUser & { userRole: UserRole | null, brand: Brand | null };
 
@@ -27,6 +27,7 @@ const verifyCallback =
             const match = req.originalUrl.match(/\/v1\/brands\/([\w-]+)\/profile$/);
             const emailMatch = req.originalUrl.match(/\/v1\/brands\/([\w-]+)\/send-email$/);
             const verifyEmailMatch = req.originalUrl.match(/\/v1\/brands\/([\w-]+)\/verify-email$/);
+            const updateBusinessInfoMatch = req.originalUrl.match(/\/v1\/brands\/([\w-]+)\/business-info$/);
 
             // console.log("match: ", match);
 
@@ -88,6 +89,29 @@ const verifyCallback =
                 }
 
                 resolve();
+            } else if (updateBusinessInfoMatch) {
+                console.log("req.body: ", req.body);
+                if (user.brand?.id !== updateBusinessInfoMatch[1]) {
+                    return reject(new ApiError(httpStatus.UNAUTHORIZED, 'Unauthorized access'));
+                }
+
+                if (user.brand?.brandCategory && user.brand?.brandIndustry && user.brand?.conversionRate) {
+                    return reject(new ApiError(httpStatus.CONFLICT, 'Business info already completed'));
+                }
+
+                req.user = user;
+
+                if (requiredRights.length) {
+                    const userRights = allRightsForUser([user.userRole!.role]) ?? [];
+                    const hasRequiredRights = requiredRights.every((requiredRight) =>
+                        userRights.includes(requiredRight)
+                    );
+                    if (!hasRequiredRights) {
+                        return reject(new ApiError(httpStatus.FORBIDDEN, 'Forbidden'));
+                    }
+                }
+
+                resolve();
             } else {
                 console.log("req.params: ", req.params);
                 if (!user.brand?.isEmailVerified) {
@@ -97,6 +121,10 @@ const verifyCallback =
                 // check if the name, description and profilePictureURL exists or not
                 if (!user.brand?.name || !user.brand?.profilePictureURL) {
                     return reject(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, "Please complete your profile first."));
+                }
+
+                if (!user.brand?.brandCategory || !user.brand?.brandIndustry || !user.brand?.conversionRate) {
+                    return reject(new ApiError(BUSINESS_INFO_REQUIRED_STATUS, 'Please complete your business info first'));
                 }
 
                 req.user = user;

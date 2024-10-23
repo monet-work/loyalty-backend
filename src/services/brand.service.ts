@@ -195,10 +195,42 @@ const updateEmailVerified = async <Key extends keyof Brand>(
     return brand;
 };
 
+const updateBusinessInfo = async <Key extends keyof Brand>(
+    brandId: string,
+    industry: string,
+    category: string,
+    conversionRate: number, brandSymbol: string,
+    keys: Key[] = [
+        'id'
+    ] as Key[]
+): Promise<Pick<Brand, Key> | null> => {
+    // create role for this user in the user role table
+    // insert user into the consumer table
+    // Second query: Use the userId from the previous query to create a post
+    const brand = await prisma.brand.update({
+        data: {
+            brandIndustry: industry,
+            brandCategory: category,
+            conversionRate: conversionRate,
+            brandSymbol: brandSymbol
+        },
+        where: {
+            id: brandId
+        }
+    });
+
+    if (!brand) {
+        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Failed to update brand's business info.");
+    }
+
+    return brand;
+};
+
 export default {
     getBrandUserByMobileNumber,
     insertBrand,
     updateBrand,
     insertBrandPOC,
-    updateEmailVerified
+    updateEmailVerified,
+    updateBusinessInfo
 };

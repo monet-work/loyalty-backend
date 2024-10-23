@@ -64,6 +64,10 @@ model Brand {
   // brandAdminId      String      @unique
   brandUsers        BrandUser[]
   consumerPoints    ConsumerPoints[]
+  brandCategory     String?
+  brandIndustry     String?
+  conversionRate    Float?
+  brandSymbol       String?
 
   @@unique([email, isEmailVerified])
   @@map("brands") // Optional: maps this model to the "consumers" table in the database

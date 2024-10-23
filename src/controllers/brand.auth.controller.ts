@@ -336,6 +336,7 @@ const verifyEmailRequest = catchAsync(async (req, res) => {
     }
 });
 
+
 export default {
     signUp,
     verifyOTP,
@@ -345,5 +346,5 @@ export default {
     addPOCRequest,
     verifyPOCRequest,
     sendEmailRequest,
-    verifyEmailRequest
+    verifyEmailRequest,
 };

@@ -18,7 +18,8 @@ export const BRAND_ROUTES = {
     "addPOCRequest": "/:brandId/pocs/send-otp",
     "verifyPOCRequest": "/:brandId/pocs/verify-otp",
     "sendEmailRequest": "/:brandId/send-email",
-    "verifyEmailRequest": "/:brandId/verify-email"
+    "verifyEmailRequest": "/:brandId/verify-email",
+    "updateBusinessInfo": "/:brandId/business-info"
 };
 
 export const AUTH_ROUTES = {
@@ -39,4 +40,5 @@ export const TOKEN_EXPIRED_MESSAGE = 'Token expired';
 export const TOKEN_EXPIRED_ERROR = 'TokenExpiredError';
 export const ACCESS_TOKEN_EXPIRED_STATUS = 440;
 export const EMAIL_VERIFICATION_REQUIRED_STATUS = 440.1;
+export const BUSINESS_INFO_REQUIRED_STATUS = 440.2;
 export const PROFILE_PICTURE = 'profilePicture';

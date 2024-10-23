@@ -2,6 +2,7 @@
 
 import Joi from 'joi';
 import { OTP_LENGTH, REG_CODE_LENGTH } from '../config/constants';
+import { industriesWithCategories } from '../config/brand-categories';
 
 const signUp = {
     body: Joi.object().keys({
@@ -80,6 +81,34 @@ const verifyEmailRequest = {
     })
 };
 
+const updateBusinessInfo = {
+    body: Joi.object({
+        industry: Joi.string()
+            .valid(...Object.keys(industriesWithCategories))
+            .required()
+            .messages({
+                'any.only': 'Invalid industry. Please select a valid industry.',
+                'any.required': 'Industry is required.',
+            }),
+        category: Joi.string()
+            .required()
+            .custom((value, helpers) => {
+                const { industry } = helpers.state.ancestors[0]; // Access industry from request data
+                const validCategories = (industriesWithCategories as any)[industry];
+                if (!validCategories || !validCategories.includes(value)) {
+                    return helpers.error('any.invalid', { value });
+                }
+                return value;
+            })
+            .messages({
+                'any.invalid': 'Invalid category for the selected industry.',
+                'any.required': 'Category is required.',
+            }),
+        conversionRate: Joi.number().required(),
+        brandSymbol: Joi.string()
+    })
+};
+
 export default {
     verifyOTP,
     signUp,
@@ -90,5 +119,6 @@ export default {
     addPOCRequest,
     verifyPOCRequest,
     sendEmailRequest,
-    verifyEmailRequest
+    verifyEmailRequest,
+    updateBusinessInfo
 };
