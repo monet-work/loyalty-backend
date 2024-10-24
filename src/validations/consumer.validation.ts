@@ -48,11 +48,37 @@ const updateProfile = {
     })
 }
 
+const linkBrandProfile = {
+    body: Joi.object().keys({
+        brandId: Joi.string().required(),
+        email: Joi.string().email(),
+        countryCode: Joi.string(),
+        mobileNumber: Joi.string(),
+    })
+        .xor('email', 'mobileNumber') // Only one of these options is allowed
+        .and('countryCode', 'mobileNumber') // If one is present, the other must also be present
+        .messages({
+            'object.missing': 'Either email or both country code and mobile number are required.',
+            'object.and': 'Both country code and mobile number must be provided together.',
+            'object.xor': 'Provide either email or (country code + mobile number), not both.',
+        })
+}
+
+const verifyBrandProfileRequest = {
+    body: Joi.object().keys({
+        id: Joi.string().required(),
+        requestId: Joi.string().required(),
+        otp: Joi.string().length(OTP_LENGTH).required()
+    })
+}
+
 export default {
     verifyOTP,
     signUp,
     login,
     loginVerifyOTP,
     logout,
-    updateProfile
+    updateProfile,
+    linkBrandProfile,
+    verifyBrandProfileRequest
 };

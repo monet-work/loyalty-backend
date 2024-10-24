@@ -32,6 +32,15 @@ router
     .route(CONSUMER_ROUTES.updateProfile)
     .put(auth('Consumer:updateProfile'), validate(consumerValidation.updateProfile), imageUpload.optionalUpload(PROFILE_PICTURE), consumerAuthController.updateProfile);
 
+// /consumers/:consumerId/link-brand-profile
+router
+    .route(CONSUMER_ROUTES.linkBrandProfile)
+    .post(auth('Consumer:linkBrandProfile'), validate(consumerValidation.linkBrandProfile), consumerController.linkBrandProfile);
+
+router
+    .route(CONSUMER_ROUTES.verifyBrandProfileRequest)
+    .post(auth('Consumer:verifyBrandProfileRequest'), validate(consumerValidation.verifyBrandProfileRequest), consumerController.verifyBrandProfileRequest);
+
 router
     .route(CONSUMER_ROUTES.getDashboard)
     .get(auth('Consumer:getDashboard'), consumerController.getDashboard);

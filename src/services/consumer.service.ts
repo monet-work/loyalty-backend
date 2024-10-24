@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Consumer, Role } from '@prisma/client';
+import { Consumer, ConsumerBrandAccount, Prisma, Role } from '@prisma/client';
 import httpStatus from 'http-status';
 import prisma from '../client';
 import ApiError from '../utils/ApiError';
@@ -84,8 +84,92 @@ const updateConsumer = async <Key extends keyof Consumer>(
     return consumer;
 };
 
+const createBrandProfileRequest = async <Key extends keyof ConsumerBrandAccount>(
+    consumerId: string,
+    brandId: string,
+    countryCode: string | undefined | null,
+    mobileNumber: string | undefined | null,
+    email: string | undefined | null,
+    keys: Key[] = [
+        'id', 'countryCode', 'mobileNumber'
+    ] as Key[]
+): Promise<Pick<ConsumerBrandAccount, Key> | null> => {
+    // create role for this user in the user role table
+    // insert user into the consumer table
+    const result = await prisma.$transaction(async (prisma) => {
+        // First query: Create a new user
+        const brand = await prisma.brand.findFirst({
+            where: {
+                id: brandId
+            }
+        });
+
+        if (!brand) {
+            throw new ApiError(httpStatus.NOT_FOUND, "Brand not found");
+        }
+
+        const consumerBrandAccountCreateInput: Prisma.ConsumerBrandAccountCreateManyInput = {
+            brandId: brandId,
+            consumerId: consumerId,
+            // ...(role === Role.BasicConsumer ? { consumerId: userId } : { brandUserId: userId }),
+            ...(email ? { email: email } : { countryCode: countryCode, mobileNumber: mobileNumber })
+        };
+
+        const consumerBrandAccount = await prisma.consumerBrandAccount.create({
+            data: consumerBrandAccountCreateInput
+        });
+
+        if (!consumerBrandAccount) {
+            throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Failed to create request for linking consumer with brand");
+        }
+
+        return { consumerBrandAccount };
+    });
+
+    return result.consumerBrandAccount;
+};
+
+const findConsumerBrandAccountById = async (
+    id: string,
+): Promise<ConsumerBrandAccount | null> => {
+    // create role for this user in the user role table
+    // insert user into the consumer table
+    const consumerBrandAccount = await prisma.consumerBrandAccount.findFirst({
+        where: {
+            id: id,
+        }
+    });
+
+    return consumerBrandAccount;
+};
+
+const verifyConsumerBrandAccount = async <Key extends keyof ConsumerBrandAccount>(
+    id: string,
+    requestId: string,
+    keys: Key[] = [
+        'id', 'countryCode', 'mobileNumber'
+    ] as Key[]
+): Promise<Pick<ConsumerBrandAccount, Key> | null> => {
+    // create role for this user in the user role table
+    // insert user into the consumer table
+    const consumerBrandAccount = await prisma.consumerBrandAccount.update({
+        data: {
+            verified: true,
+            verificationId: requestId
+        },
+        where: {
+            id: id,
+        }
+    });
+
+    return consumerBrandAccount;
+};
+
 export default {
     getConsumerByMobileNumber,
     insertConsumer,
-    updateConsumer
+    updateConsumer,
+    createBrandProfileRequest,
+    findConsumerBrandAccountById,
+    verifyConsumerBrandAccount
 };

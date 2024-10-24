@@ -5,7 +5,9 @@ export const CONSUMER_ROUTES = {
     "login": "/login",
     "loginVerifyOTP": "/login/verify-otp",
     "getDashboard": "/dashboard",
-    "updateProfile": "/:consumerId/profile"
+    "updateProfile": "/:consumerId/profile",
+    "linkBrandProfile": "/:consumerId/link-brand-profile",
+    "verifyBrandProfileRequest": "/:consumerId/verify-brand-profile"
 };
 
 export const BRAND_ROUTES = {

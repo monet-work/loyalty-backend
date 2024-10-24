@@ -23,6 +23,8 @@ const verifyCallback =
             }
 
             const match = req.originalUrl.match(/\/v1\/consumers\/([\w-]+)\/profile$/);
+            const linkBrandProfileMatch = req.originalUrl.match(/\/v1\/consumers\/([\w-]+)\/link-brand-profile$/);
+            const verifyBrandProfileMatch = req.originalUrl.match(/\/v1\/consumers\/([\w-]+)\/link-brand-profile$/);
 
             if (!user) {
                 console.warn('Authentication failed:', info);
@@ -39,12 +41,18 @@ const verifyCallback =
                 }
 
                 return reject(new ApiError(status, message));
-            } else if (!match) {
-                // check if the name, description and profilePictureURL exists or not
-                if (!user.name) {
-                    return reject(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, "Please complete your profile first."));
+            } else if (match) {
+                if (user.id !== match[1]) {
+                    return reject(new ApiError(httpStatus.UNAUTHORIZED, 'Unauthorized access'));
+                }
+                // it did match with the update profile
+                // check if the user already has the entire profile setup or not
+                if (user.name) {
+                    // profile already completed
+                    return reject(new ApiError(httpStatus.CONFLICT, 'Profile already completed'));
                 }
 
+                // allow the user to update the profile
                 req.user = user;
 
                 if (requiredRights.length) {
@@ -59,17 +67,17 @@ const verifyCallback =
 
                 resolve();
             } else {
-                if (user.id !== match[1]) {
+                const matchConsumer = linkBrandProfileMatch || verifyBrandProfileMatch;
+
+                if (matchConsumer && user.id !== matchConsumer[1]) {
                     return reject(new ApiError(httpStatus.UNAUTHORIZED, 'Unauthorized access'));
                 }
-                // it did match with the update profile
-                // check if the user already has the entire profile setup or not
-                if (user.name) {
-                    // profile already completed
-                    return reject(new ApiError(httpStatus.CONFLICT, 'Profile already completed'));
+
+                // check if the name, description and profilePictureURL exists or not
+                if (!user.name) {
+                    return reject(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, "Please complete your profile first."));
                 }
 
-                // allow the user to update the profile
                 req.user = user;
 
                 if (requiredRights.length) {
