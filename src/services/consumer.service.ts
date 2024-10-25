@@ -100,7 +100,8 @@ const createBrandProfileRequest = async <Key extends keyof ConsumerBrandAccount>
         // First query: Create a new user
         const brand = await prisma.brand.findFirst({
             where: {
-                id: brandId
+                id: brandId,
+                isIntegrationCompleted: true
             }
         });
 
