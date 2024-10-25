@@ -5,7 +5,7 @@ import ApiError from '../utils/ApiError';
 import { allRightsForUser, roleRights, roles } from '../config/roles';
 import { NextFunction, Request, Response } from 'express';
 import { Brand, BrandUser, Consumer, UserRole } from '@prisma/client';
-import { ACCESS_TOKEN_EXPIRED_STATUS, BUSINESS_INFO_REQUIRED_STATUS, EMAIL_VERIFICATION_REQUIRED_STATUS, JWT_STRATEGY_BRAND, JWT_STRATEGY_CONSUMER, TOKEN_EXPIRED_ERROR } from '../config/constants';
+import { ACCESS_TOKEN_EXPIRED_STATUS, BUSINESS_INFO_REQUIRED_STATUS, EMAIL_VERIFICATION_REQUIRED_STATUS, INTEGRATION_COMPLETED_STATUS, JWT_STRATEGY_BRAND, JWT_STRATEGY_CONSUMER, TOKEN_EXPIRED_ERROR } from '../config/constants';
 
 type BrandWithUserRole = BrandUser & { userRole: UserRole | null, brand: Brand | null };
 
@@ -125,6 +125,10 @@ const verifyCallback =
                 console.log("req.params: ", req.params);
                 if (!user.brand?.isEmailVerified) {
                     return reject(new ApiError(EMAIL_VERIFICATION_REQUIRED_STATUS, "Please verify your email first."));
+                }
+
+                if (!user.brand?.isIntegrationCompleted) {
+                    return reject(new ApiError(INTEGRATION_COMPLETED_STATUS, "We are reviewing and will work with you to complete the integration with our systems."));
                 }
 
                 req.user = user;

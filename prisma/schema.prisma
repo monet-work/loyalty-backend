@@ -54,20 +54,21 @@ model Brand {
   createdAt DateTime @default(now()) // Created at timestamp
   updatedAt DateTime @default(now()) // Updated at timestamp
 
-  name                 String?                @unique
-  description          String? // Optional description of the brand
-  profilePictureURL    String? // Optional URL for the brand's profile picture
-  email                String?
-  isEmailVerified      Boolean                @default(false)
-  emailRequestId       String?
+  name                   String?                @unique
+  description            String? // Optional description of the brand
+  profilePictureURL      String? // Optional URL for the brand's profile picture
+  email                  String?
+  isEmailVerified        Boolean                @default(false)
+  emailRequestId         String?
   // brandAdmin        BrandUser?  @relation("brand_to_admin", fields: [brandAdminId], references: [id])
   // brandAdminId      String      @unique
-  brandUsers           BrandUser[]
-  brandCategory        String?
-  brandIndustry        String?
-  conversionRate       Float?
-  brandSymbol          String?
-  ConsumerBrandAccount ConsumerBrandAccount[]
+  brandUsers             BrandUser[]
+  brandCategory          String?
+  brandIndustry          String?
+  conversionRate         Float?
+  brandSymbol            String?
+  ConsumerBrandAccount   ConsumerBrandAccount[]
+  isIntegrationCompleted Boolean                @default(false)
 
   @@unique([email, isEmailVerified])
   @@map("brands") // Optional: maps this model to the "consumers" table in the database

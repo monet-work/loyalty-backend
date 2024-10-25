@@ -43,4 +43,5 @@ export const TOKEN_EXPIRED_ERROR = 'TokenExpiredError';
 export const ACCESS_TOKEN_EXPIRED_STATUS = 440;
 export const EMAIL_VERIFICATION_REQUIRED_STATUS = 440.1;
 export const BUSINESS_INFO_REQUIRED_STATUS = 440.2;
+export const INTEGRATION_COMPLETED_STATUS = 440.3;
 export const PROFILE_PICTURE = 'profilePicture';
