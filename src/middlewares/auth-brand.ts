@@ -113,11 +113,6 @@ const verifyCallback =
 
                 resolve();
             } else {
-                console.log("req.params: ", req.params);
-                if (!user.brand?.isEmailVerified) {
-                    return reject(new ApiError(EMAIL_VERIFICATION_REQUIRED_STATUS, "Please verify your email first."));
-                }
-
                 // check if the name, description and profilePictureURL exists or not
                 if (!user.brand?.name || !user.brand?.profilePictureURL) {
                     return reject(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, "Please complete your profile first."));
@@ -125,6 +120,11 @@ const verifyCallback =
 
                 if (!user.brand?.brandCategory || !user.brand?.brandIndustry || !user.brand?.conversionRate) {
                     return reject(new ApiError(BUSINESS_INFO_REQUIRED_STATUS, 'Please complete your business info first'));
+                }
+
+                console.log("req.params: ", req.params);
+                if (!user.brand?.isEmailVerified) {
+                    return reject(new ApiError(EMAIL_VERIFICATION_REQUIRED_STATUS, "Please verify your email first."));
                 }
 
                 req.user = user;
