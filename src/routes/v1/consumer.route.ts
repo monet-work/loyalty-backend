@@ -45,6 +45,14 @@ router
     .route(CONSUMER_ROUTES.getDashboard)
     .get(auth('Consumer:getDashboard'), consumerController.getDashboard);
 
+router
+    .route(CONSUMER_ROUTES.transferPoints)
+    .post(auth('Consumer:transferPoints'), validate(consumerValidation.transferPoints), consumerController.transferPoints);
+
+router
+    .route(CONSUMER_ROUTES.brandAccounts)
+    .get(auth('Consumer:brandAccounts'), validate(consumerValidation.brandAccounts), consumerController.brandAccounts);
+
 
 // router
 //     .route('/:customerId/points')

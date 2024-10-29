@@ -7,7 +7,9 @@ export const CONSUMER_ROUTES = {
     "getDashboard": "/dashboard",
     "updateProfile": "/:consumerId/profile",
     "linkBrandProfile": "/:consumerId/link-brand-profile",
-    "verifyBrandProfileRequest": "/:consumerId/verify-brand-profile"
+    "verifyBrandProfileRequest": "/:consumerId/verify-brand-profile",
+    "transferPoints": "/:consumerId/transfer-points",
+    "brandAccounts": "/:consumerId/brand-accounts"
 };
 
 export const BRAND_ROUTES = {
@@ -45,3 +47,4 @@ export const EMAIL_VERIFICATION_REQUIRED_STATUS = 440.1;
 export const BUSINESS_INFO_REQUIRED_STATUS = 440.2;
 export const INTEGRATION_COMPLETED_STATUS = 440.3;
 export const PROFILE_PICTURE = 'profilePicture';
+export const EXPIRY_DAYS_FOR_NEWLY_ISSUED_POINTS = 14;

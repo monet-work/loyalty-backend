@@ -25,6 +25,7 @@ const verifyCallback =
             const match = req.originalUrl.match(/\/v1\/consumers\/([\w-]+)\/profile$/);
             const linkBrandProfileMatch = req.originalUrl.match(/\/v1\/consumers\/([\w-]+)\/link-brand-profile$/);
             const verifyBrandProfileMatch = req.originalUrl.match(/\/v1\/consumers\/([\w-]+)\/link-brand-profile$/);
+            const getBrandProfilesMatch = req.originalUrl.match(/\/v1\/consumers\/([\w-]+)\/brand-accounts$/);
 
             if (!user) {
                 console.warn('Authentication failed:', info);
@@ -67,7 +68,7 @@ const verifyCallback =
 
                 resolve();
             } else {
-                const matchConsumer = linkBrandProfileMatch || verifyBrandProfileMatch;
+                const matchConsumer = linkBrandProfileMatch || verifyBrandProfileMatch || getBrandProfilesMatch;
 
                 if (matchConsumer && user.id !== matchConsumer[1]) {
                     return reject(new ApiError(httpStatus.UNAUTHORIZED, 'Unauthorized access'));

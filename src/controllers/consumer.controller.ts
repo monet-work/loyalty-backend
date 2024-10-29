@@ -117,8 +117,55 @@ const verifyBrandProfileRequest = catchAsync(async (req, res) => {
     }
 });
 
+const transferPoints = catchAsync(async (req, res) => {
+    const { fromBrandId,
+        toBrandId,
+        points } = req.body;
+
+    const consumerId = (req.user as Consumer).id;
+
+    let pointsTransfer = await consumerService.transferPoints(consumerId, fromBrandId, toBrandId, points);
+
+    if (pointsTransfer) {
+        res.status(httpStatus.OK)
+            .send({
+                message: "Points transferred successfully"
+            });
+        return;
+    } else {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR)
+            .send({
+                message: "An unexpected error occurred while processing the points transfer."
+            });
+        return;
+    }
+});
+
+const brandAccounts = catchAsync(async (req, res) => {
+    const consumerId = (req.user as Consumer).id;
+
+    let brandAccounts = await consumerService.findBrandAccounts(consumerId);
+
+    if (brandAccounts) {
+        res.status(httpStatus.OK)
+            .send({
+                accounts: brandAccounts,
+                message: "Brand accounts fetched successfully"
+            });
+        return;
+    } else {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR)
+            .send({
+                message: "An unexpected error occurred while getting the brand accounts for the consumer."
+            });
+        return;
+    }
+});
+
 export default {
     getDashboard,
     linkBrandProfile,
-    verifyBrandProfileRequest
+    verifyBrandProfileRequest,
+    transferPoints,
+    brandAccounts
 };

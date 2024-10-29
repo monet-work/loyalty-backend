@@ -1,8 +1,9 @@
 /* eslint-disable prettier/prettier */
-import { Consumer, ConsumerBrandAccount, Prisma, Role } from '@prisma/client';
+import { Consumer, ConsumerBrandAccount, PointsTransfer, Prisma, Role, TransferStatus } from '@prisma/client';
 import httpStatus from 'http-status';
 import prisma from '../client';
 import ApiError from '../utils/ApiError';
+import { EXPIRY_DAYS_FOR_NEWLY_ISSUED_POINTS } from '../config/constants';
 
 const getConsumerByMobileNumber = async <Key extends keyof Consumer>(
     countryCode: string,
@@ -166,11 +167,142 @@ const verifyConsumerBrandAccount = async <Key extends keyof ConsumerBrandAccount
     return consumerBrandAccount;
 };
 
+const transferPoints = async (consumerId: string, fromBrandId: string, toBrandId: string, points: number): Promise<PointsTransfer | null> => {
+    // create role for this user in the user role table
+    // insert user into the consumer table
+    // const result = await prisma.$transaction(async (prisma) => {
+    // First query: Create a new user
+    const fromBrand = await prisma.consumerBrandAccount.findFirst({
+        include: {
+            brand: {
+                select: {
+                    conversionRate: true,
+                    brandIndustry: true
+                }
+            }
+        },
+        where: {
+            consumerId: consumerId,
+            brandId: fromBrandId,
+            verified: true
+        }
+    });
+
+    if (!fromBrand) {
+        throw new ApiError(httpStatus.NOT_FOUND, "Source Brand not linked");
+    }
+
+    const toBrand = await prisma.consumerBrandAccount.findFirst({
+        include: {
+            brand: {
+                select: {
+                    conversionRate: true,
+                    brandIndustry: true
+                }
+            }
+        },
+        where: {
+            consumerId: consumerId,
+            brandId: toBrandId,
+            verified: true
+        }
+    });
+
+    if (!toBrand) {
+        throw new ApiError(httpStatus.NOT_FOUND, "Destination Brand not linked");
+    }
+
+    if (fromBrand.brand.brandIndustry === fromBrand.brand.brandIndustry) {
+        throw new ApiError(httpStatus.FORBIDDEN, "Points conversion not allowed in the same category");
+    }
+
+    const currentDate = new Date();
+    const futureDate = new Date(currentDate);
+
+    futureDate.setDate(futureDate.getDate() + EXPIRY_DAYS_FOR_NEWLY_ISSUED_POINTS);
+
+    let pointsTransfer = await prisma.pointsTransfer.create({
+        data: {
+            fromBrandId: fromBrandId,
+            consumerId: consumerId,
+            toBrandId: toBrandId,
+            pointsTransferred: points,
+            createdAt: new Date(),
+            transferStatus: TransferStatus.PENDING,
+            toExpiryDate: futureDate
+        }
+    });
+
+    if (!pointsTransfer) {
+        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Failed to create points transfer request");
+    }
+
+    // Directly make the update call to the brand A to see if 100 points can be used
+    // const resA = await brandAPIService.update(brandA);
+    // 
+
+    pointsTransfer = await prisma.pointsTransfer.update({
+        data: {
+            completedAt: new Date(),
+            transferStatus: TransferStatus.BRAND1_UPDATE_SUCCESS
+        },
+        where: {
+            id: pointsTransfer.id
+        }
+    });
+
+    // update the points in brand B
+    // const resB = await brandAPIService.update(brandB);
+    // 
+
+    pointsTransfer = await prisma.pointsTransfer.update({
+        data: {
+            completedAt: new Date(),
+            transferStatus: TransferStatus.COMPLETED
+        },
+        where: {
+            id: pointsTransfer.id
+        }
+    });
+
+    if (!pointsTransfer) {
+        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Failed to update points transfer after updating points");
+    }
+
+    return pointsTransfer;
+}
+
+const findBrandAccounts = async (consumerId: string): Promise<ConsumerBrandAccount[] | null> => {
+    // create role for this user in the user role table
+    // insert user into the consumer table
+    // const result = await prisma.$transaction(async (prisma) => {
+    // First query: Create a new user
+    const accounts = await prisma.consumerBrandAccount.findMany({
+        include: {
+            brand: {
+                select: {
+                    id: true,
+                    name: true,
+                    profilePictureURL: true
+                }
+            }
+        },
+        where: {
+            consumerId: consumerId,
+            verified: true
+        }
+    });
+
+    return accounts;
+}
+
 export default {
     getConsumerByMobileNumber,
     insertConsumer,
     updateConsumer,
     createBrandProfileRequest,
     findConsumerBrandAccountById,
-    verifyConsumerBrandAccount
+    verifyConsumerBrandAccount,
+    transferPoints,
+    findBrandAccounts
 };

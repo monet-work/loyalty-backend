@@ -72,6 +72,17 @@ const verifyBrandProfileRequest = {
     })
 }
 
+const transferPoints = {
+    body: Joi.object().keys({
+        consumerId: Joi.string().required(),
+        fromBrandId: Joi.string().required(),
+        toBrandId: Joi.string().required(),
+        points: Joi.number().required()
+    })
+};
+
+const brandAccounts = {}
+
 export default {
     verifyOTP,
     signUp,
@@ -80,5 +91,7 @@ export default {
     logout,
     updateProfile,
     linkBrandProfile,
-    verifyBrandProfileRequest
+    verifyBrandProfileRequest,
+    transferPoints,
+    brandAccounts
 };
