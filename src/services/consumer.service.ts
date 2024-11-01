@@ -111,6 +111,18 @@ const createBrandProfileRequest = async <Key extends keyof ConsumerBrandAccount>
             throw new ApiError(httpStatus.NOT_FOUND, "Brand not found");
         }
 
+        const account = await prisma.consumerBrandAccount.findFirst({
+            where: {
+                consumerId: consumerId,
+                brandId: brandId,
+                verified: true
+            }
+        });
+
+        if (account) {
+            throw new ApiError(httpStatus.CONFLICT, "Account already verified.");
+        }
+
         const consumerBrandAccountCreateInput: Prisma.ConsumerBrandAccountCreateManyInput = {
             brandId: brandId,
             consumerId: consumerId,
