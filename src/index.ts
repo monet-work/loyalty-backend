@@ -6,6 +6,38 @@ import logger from './config/logger';
 import redisClient from './config/redis';
 import { sendOTP } from './utils/otpless';
 
+
+import { BrandAdapter } from './adapter/brand-adapter';
+import { PointEntry } from './config/brand-types';
+
+// Example function to demonstrate usage of the adapter
+async function exampleUsage() {
+  try {
+    // Initialize adapter for a specific brand, e.g., 'brandA' from your config
+    const brandAdapter = new BrandAdapter('brandA');
+
+    // Example user ID for fetching points
+    const userId = 'john.doe@example.com';
+
+    // Fetch points for the user
+    const points: PointEntry[] = await brandAdapter.fetchPoints(userId);
+    console.log('User Points:', points);
+
+    // Example data for transferring points
+    const fromUserId = 'john.doe@example.com';
+    const pointsToTransfer = 200;
+
+    // Transfer points from one user to another
+    // const transferResponse = await brandAdapter.transferPoints(fromUserId, pointsToTransfer);
+    // console.log('Transfer Response:', transferResponse);
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
+// Call the example function
+exampleUsage();
+
 let server: Server;
 prisma.$connect().then(() => {
   logger.info('Connected to SQL Database');

@@ -1,9 +1,10 @@
 /* eslint-disable prettier/prettier */
-import { Consumer, ConsumerBrandAccount, PointsTransfer, Prisma, Role, TransferStatus } from '@prisma/client';
+import { Brand, Consumer, ConsumerBrandAccount, PointsTransfer, Prisma, Role, TransferStatus } from '@prisma/client';
 import httpStatus from 'http-status';
 import prisma from '../client';
 import ApiError from '../utils/ApiError';
 import { EXPIRY_DAYS_FOR_NEWLY_ISSUED_POINTS } from '../config/constants';
+import { PartialBrand } from '../config/brand-types';
 
 const getConsumerByMobileNumber = async <Key extends keyof Consumer>(
     countryCode: string,
@@ -272,6 +273,29 @@ const transferPoints = async (consumerId: string, fromBrandId: string, toBrandId
     return pointsTransfer;
 }
 
+const findBrandsForProfile = async (consumerId: string): Promise<PartialBrand[] | null> => {
+    // create role for this user in the user role table
+    // insert user into the consumer table
+    // const result = await prisma.$transaction(async (prisma) => {
+    // First query: Create a new user
+    const brands = await prisma.brand.findMany({
+        select: {
+            id: true,
+            name: true,
+            profilePictureURL: true
+        },
+        where: {
+            ConsumerBrandAccount: {
+                none: {
+                    consumerId: consumerId
+                }
+            }
+        }
+    });
+
+    return brands;
+}
+
 const findBrandAccounts = async (consumerId: string): Promise<ConsumerBrandAccount[] | null> => {
     // create role for this user in the user role table
     // insert user into the consumer table
@@ -304,5 +328,6 @@ export default {
     findConsumerBrandAccountById,
     verifyConsumerBrandAccount,
     transferPoints,
-    findBrandAccounts
+    findBrandAccounts,
+    findBrandsForProfile
 };

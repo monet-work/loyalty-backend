@@ -145,11 +145,13 @@ const brandAccounts = catchAsync(async (req, res) => {
     const consumerId = (req.user as Consumer).id;
 
     let brandAccounts = await consumerService.findBrandAccounts(consumerId);
+    let brands = await consumerService.findBrandsForProfile(consumerId);
 
-    if (brandAccounts) {
+    if (brandAccounts && brands) {
         res.status(httpStatus.OK)
             .send({
                 accounts: brandAccounts,
+                brands: brands,
                 message: "Brand accounts fetched successfully"
             });
         return;

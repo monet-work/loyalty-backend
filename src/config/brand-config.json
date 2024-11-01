@@ -1,0 +1,62 @@
+{
+    "brands": {
+        "brandA": {
+            "name": "Brand A",
+            "api_base_url": "https://loyalty-test-frontend.vercel.app/api",
+            "endpoints": {
+                "getPoints": "/company1/points",
+                "transferPoints": "/company1/points"
+            },
+            "auth": {
+                "type": "bearer_token123",
+                "token_url": "https://api.brandA.com/oauth/token"
+            },
+            "schema": {
+                "points": "points",
+                "expiration_date": "expiry"
+            },
+            "customHeaders": {
+                "API-KEY": "123456789"
+            },
+            "queryParams": {
+                "email": "{userId}"
+            },
+            "customBodyParams": {
+                "transferPoints": {
+                    "points": "{points}",
+                    "expiry": "{expiration_date}"
+                }
+            },
+            "pointsArrayPath": "points"
+        },
+        "brandB": {
+            "name": "Brand B",
+            "api_base_url": "https://loyalty-test-frontend.vercel.app/api",
+            "endpoints": {
+                "getPoints": "/company1/points",
+                "transferPoints": "/company1/points"
+            },
+            "auth": {
+                "type": "bearer_token123",
+                "token_url": "https://api.brandA.com/oauth/token"
+            },
+            "schema": {
+                "points": "points",
+                "expiration_date": "expiry"
+            },
+            "customHeaders": {
+                "API-KEY": "123456789"
+            },
+            "queryParams": {
+                "email": "{userId}"
+            },
+            "customBodyParams": {
+                "transferPoints": {
+                    "points": "{points}",
+                    "expiry": "{expiration_date}"
+                }
+            },
+            "pointsArrayPath": "points"
+        }
+    }
+}
