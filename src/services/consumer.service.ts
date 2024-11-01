@@ -287,7 +287,8 @@ const findBrandsForProfile = async (consumerId: string): Promise<PartialBrand[] 
         where: {
             ConsumerBrandAccount: {
                 none: {
-                    consumerId: consumerId
+                    consumerId: consumerId,
+                    verified: false
                 }
             }
         }

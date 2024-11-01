@@ -152,7 +152,7 @@ model ConsumerBrandAccount {
   consumer Consumer @relation(fields: [consumerId], references: [id])
   brand    Brand    @relation(fields: [brandId], references: [id])
 
-  @@unique([consumerId, brandId])
+  @@unique([consumerId, brandId, verified])
   @@map("consumer_brand_accounts")
 }
 
