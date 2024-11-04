@@ -22,8 +22,8 @@
     "docker:dev-db:stop": "docker-compose -f docker-compose.only-db-dev.yml down",
     "prepare": "husky install",
     "rimraf": "./node_modules/rimraf/bin.js",
-    "build": "rimraf build && tsc -p tsconfig.json",
-    "build-be": "rimraf build && tsc -p tsconfig.build.json"
+    "build": "./node_modules/rimraf/bin.js build && tsc -p tsconfig.json",
+    "build-be": "./node_modules/rimraf/bin.js build && tsc -p tsconfig.build.json"
   },
   "keywords": [
     "node",
