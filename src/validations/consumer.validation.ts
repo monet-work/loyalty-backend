@@ -74,7 +74,6 @@ const verifyBrandProfileRequest = {
 
 const transferPoints = {
     body: Joi.object().keys({
-        consumerId: Joi.string().required(),
         fromBrandId: Joi.string().required(),
         toBrandId: Joi.string().required(),
         points: Joi.number().required()
