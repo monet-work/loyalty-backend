@@ -91,7 +91,8 @@ const verifyBrandProfileRequest = catchAsync(async (req, res) => {
                 res.status(httpStatus.OK)
                     .send({
                         message: "OTP verified successfully.",
-                        id: consumerBrandAccount.id
+                        id: consumerBrandAccount.id,
+                        points: 100
                     });
                 return;
             }
