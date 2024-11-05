@@ -10,14 +10,14 @@ import { sendOTP } from './utils/otpless';
 import { BrandAdapter } from './adapter/brand-adapter';
 import { PointEntry } from './config/brand-types';
 
-// // Example function to demonstrate usage of the adapter
+// Example function to demonstrate usage of the adapter
 // async function exampleUsage() {
 //   try {
 //     // Initialize adapter for a specific brand, e.g., 'brandA' from your config
-//     const brandAdapter = new BrandAdapter('brandC');
+//     const brandAdapter = new BrandAdapter('b1be31f7-40f6-4475-b04e-c8040ca60b4a');
 
 //     // Example user ID for fetching points
-//     const userId = '+912121212121';
+//     const userId = '+918792362659';
 //     // const userId = "alice@example.com";
 
 //     // Fetch points for the user
@@ -25,12 +25,12 @@ import { PointEntry } from './config/brand-types';
 //     console.log('User Points:', points);
 
 //     // Example data for transferring points
-//     const fromUserId = '+912121212121';
-//     const pointsToTransfer = 200;
+//     // const fromUserId = '+912121212121';
+//     // const pointsToTransfer = 200;
 
-//     // Transfer points from one user to another
-//     const transferResponse = await brandAdapter.transferPoints(fromUserId, pointsToTransfer);
-//     console.log('Transfer Response:', transferResponse);
+//     // // Transfer points from one user to another
+//     // const transferResponse = await brandAdapter.transferPoints(fromUserId, pointsToTransfer);
+//     // console.log('Transfer Response:', transferResponse);
 //   } catch (error) {
 //     console.error('Error:', error);
 //   }

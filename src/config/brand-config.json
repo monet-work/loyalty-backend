@@ -58,7 +58,7 @@
             },
             "pointsArrayPath": "points"
         },
-        "brandC": {
+        "b1be31f7-40f6-4475-b04e-c8040ca60b4a": {
             "name": "Brand C",
             "api_base_url": "https://mongodb-typescript-api.onrender.com",
             "endpoints": {
@@ -87,7 +87,7 @@
             },
             "pointsArrayPath": "points"
         },
-        "brandD": {
+        "85769973-7c96-4a1d-8528-1e49859be24a": {
             "name": "Brand 4",
             "api_base_url": "https://mongodb-typescript-api.onrender.com",
             "endpoints": {

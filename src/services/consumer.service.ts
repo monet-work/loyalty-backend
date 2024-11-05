@@ -5,6 +5,7 @@ import prisma from '../client';
 import ApiError from '../utils/ApiError';
 import { EXPIRY_DAYS_FOR_NEWLY_ISSUED_POINTS } from '../config/constants';
 import { PartialBrand } from '../config/brand-types';
+import { BrandAdapter } from '../adapter/brand-adapter';
 
 const getConsumerByMobileNumber = async <Key extends keyof Consumer>(
     countryCode: string,
@@ -255,12 +256,15 @@ const transferPoints = async (consumerId: string, fromBrandId: string, toBrandId
 
     // Directly make the update call to the brand A to see if 100 points can be used
     // const resA = await brandAPIService.update(brandA);
-    // 
+    const brandAAdapter = new BrandAdapter(fromBrandId);
+    const transferResponse = await brandAAdapter.transferPoints(fromBrand.email ? fromBrand.email : fromBrand.countryCode! + fromBrand.mobileNumber!, -1 * Number(pointsTransfer));
+    // console.log('Transfer Response:', transferResponse);
 
     pointsTransfer = await prisma.pointsTransfer.update({
         data: {
             completedAt: new Date(),
-            transferStatus: TransferStatus.BRAND1_UPDATE_SUCCESS
+            transferStatus: TransferStatus.BRAND1_UPDATE_SUCCESS,
+            brandATransactionID: transferResponse.id
         },
         where: {
             id: pointsTransfer.id
@@ -270,11 +274,15 @@ const transferPoints = async (consumerId: string, fromBrandId: string, toBrandId
     // update the points in brand B
     // const resB = await brandAPIService.update(brandB);
     // 
+    const brandBAdapter = new BrandAdapter(toBrandId);
+    const transferResponse2 = await brandBAdapter.transferPoints(toBrand.email ? toBrand.email : toBrand.countryCode! + toBrand.mobileNumber!, Number(pointsB));
+
 
     pointsTransfer = await prisma.pointsTransfer.update({
         data: {
             completedAt: new Date(),
-            transferStatus: TransferStatus.COMPLETED
+            transferStatus: TransferStatus.COMPLETED,
+            brandBTransactionID: transferResponse2.id
         },
         where: {
             id: pointsTransfer.id
