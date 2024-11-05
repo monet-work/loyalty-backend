@@ -9,7 +9,9 @@ export const CONSUMER_ROUTES = {
     "linkBrandProfile": "/:consumerId/link-brand-profile",
     "verifyBrandProfileRequest": "/:consumerId/verify-brand-profile",
     "transferPoints": "/:consumerId/transfer-points",
-    "brandAccounts": "/:consumerId/brand-accounts"
+    "brandAccounts": "/:consumerId/brand-accounts",
+    "linkedBrandAccounts": "/:consumerId/linked-brand-accounts",
+    "linkedBrandAccount": "/:consumerId/linked-brand-accounts/:brandAccountId"
 };
 
 export const BRAND_ROUTES = {

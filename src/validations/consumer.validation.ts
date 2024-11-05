@@ -80,7 +80,23 @@ const transferPoints = {
     })
 };
 
+// "brandAccounts": "/:consumerId/brand-accounts",
+//     "linkedBrandAccounts": "/:consumerId/linked-brand-accounts",
+//     "linkedBrandAccount": "/:consumerId/linked-brand-accounts/:brandAccountId"
 const brandAccounts = {}
+
+const linkedBrandAccounts = {
+    params: Joi.object().keys({
+        consumerId: Joi.string().required()
+    })
+};
+
+const linkedBrandAccount = {
+    params: Joi.object().keys({
+        consumerId: Joi.string().required(),
+        brandAccountId: Joi.string().required()
+    })
+};
 
 export default {
     verifyOTP,
@@ -92,5 +108,7 @@ export default {
     linkBrandProfile,
     verifyBrandProfileRequest,
     transferPoints,
-    brandAccounts
+    brandAccounts,
+    linkedBrandAccounts,
+    linkedBrandAccount
 };

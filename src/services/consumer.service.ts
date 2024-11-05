@@ -344,6 +344,63 @@ const findBrandAccounts = async (consumerId: string): Promise<ConsumerBrandAccou
     return accounts;
 }
 
+const findLinkedBrandAccounts = async (consumerId: string): Promise<ConsumerBrandAccount[] | null> => {
+    // create role for this user in the user role table
+    // insert user into the consumer table
+    // const result = await prisma.$transaction(async (prisma) => {
+    // First query: Create a new user
+    const accounts = await prisma.consumerBrandAccount.findMany({
+        include: {
+            brand: {
+                select: {
+                    id: true,
+                    name: true,
+                    profilePictureURL: true,
+                    conversionRate: true,
+                }
+            }
+        },
+        where: {
+            consumerId: consumerId,
+            verified: true
+        }
+    });
+
+    return accounts;
+}
+
+const findLinkedBrandAccountById = async (consumerId: string, brandAccountId: string): Promise<ConsumerBrandAccount | null> => {
+    // create role for this user in the user role table
+    // insert user into the consumer table
+    // const result = await prisma.$transaction(async (prisma) => {
+    // First query: Create a new user
+    const brandAccount = await prisma.consumerBrandAccount.findUnique({
+        include: {
+            brand: {
+                select: {
+                    id: true,
+                    name: true,
+                    profilePictureURL: true,
+                    conversionRate: true,
+                }
+            }
+        },
+        where: {
+            id: brandAccountId
+        }
+    });
+
+    if (!brandAccount) {
+        throw new ApiError(httpStatus.NOT_FOUND, "Brand account not found");
+    }
+
+    if (brandAccount.consumerId !== consumerId || !brandAccount.verified) {
+        throw new ApiError(httpStatus.NOT_FOUND, "Brand account not found");
+    }
+
+    return brandAccount;
+}
+
 export default {
     getConsumerByMobileNumber,
     insertConsumer,
@@ -353,5 +410,7 @@ export default {
     verifyConsumerBrandAccount,
     transferPoints,
     findBrandAccounts,
-    findBrandsForProfile
+    findBrandsForProfile,
+    findLinkedBrandAccounts,
+    findLinkedBrandAccountById
 };

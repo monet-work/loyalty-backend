@@ -53,6 +53,18 @@ router
     .route(CONSUMER_ROUTES.brandAccounts)
     .get(auth('Consumer:brandAccounts'), validate(consumerValidation.brandAccounts), consumerController.brandAccounts);
 
+router
+    .route(CONSUMER_ROUTES.brandAccounts)
+    .get(auth('Consumer:brandAccounts'), validate(consumerValidation.brandAccounts), consumerController.brandAccounts);
+
+router
+    .route(CONSUMER_ROUTES.linkedBrandAccounts)
+    .get(auth('Consumer:linkedBrandAccounts'), validate(consumerValidation.linkedBrandAccounts), consumerController.linkedBrandAccounts);
+
+router
+    .route(CONSUMER_ROUTES.linkedBrandAccount)
+    .get(auth('Consumer:linkedBrandAccount'), validate(consumerValidation.linkedBrandAccount), consumerController.linkedBrandAccount);
+
 
 // router
 //     .route('/:customerId/points')

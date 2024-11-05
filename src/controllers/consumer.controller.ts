@@ -6,6 +6,8 @@ import { sendEmail, sendOTP } from '../utils/otpless';
 import tokenService from '../services/token.service';
 import { Consumer, Role, ConsumerBrandAccount } from '@prisma/client';
 import authService from '../services/auth.service';
+import { BrandAdapter } from '../adapter/brand-adapter';
+import { PointEntry } from '../config/brand-types';
 
 const getDashboard = catchAsync(async (req, res) => {
     console.log("getDashboard: ", req.user);
@@ -165,10 +167,66 @@ const brandAccounts = catchAsync(async (req, res) => {
     }
 });
 
+const linkedBrandAccounts = catchAsync(async (req, res) => {
+    const consumerId = (req.user as Consumer).id;
+
+    let brandAccounts = await consumerService.findLinkedBrandAccounts(consumerId);
+    let brands = await consumerService.findBrandsForProfile(consumerId);
+
+    if (brandAccounts && brands) {
+        res.status(httpStatus.OK)
+            .send({
+                accounts: brandAccounts,
+                message: "Brand accounts fetched successfully"
+            });
+        return;
+    } else {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR)
+            .send({
+                message: "An unexpected error occurred while getting the brand accounts for the consumer."
+            });
+        return;
+    }
+});
+
+const linkedBrandAccount = catchAsync(async (req, res) => {
+    const consumerId = (req.user as Consumer).id;
+    const brandId = req.params.brandAccountId;
+
+    let brandDetails = await consumerService.findLinkedBrandAccountById(consumerId, brandId);
+
+    if (brandDetails) {
+        const brandAdapter = new BrandAdapter(brandDetails.brandId);
+
+        // const userId = "alice@example.com";
+
+        // Fetch points for the user
+        const points: PointEntry[] = await brandAdapter.fetchPoints(brandDetails.email ? brandDetails.email : brandDetails.countryCode! + brandDetails.mobileNumber!);
+
+        const totalPoints = points.reduce((accumulator, point) => accumulator + Number(point.points), 0);
+
+        res.status(httpStatus.OK)
+            .send({
+                brand: brandDetails,
+                message: "Brand account fetched successfully",
+                totalPoints: totalPoints
+            });
+        return;
+    } else {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR)
+            .send({
+                message: "An unexpected error occurred while getting the brand accounts for the consumer."
+            });
+        return;
+    }
+});
+
 export default {
     getDashboard,
     linkBrandProfile,
     verifyBrandProfileRequest,
     transferPoints,
-    brandAccounts
+    brandAccounts,
+    linkedBrandAccounts,
+    linkedBrandAccount
 };
