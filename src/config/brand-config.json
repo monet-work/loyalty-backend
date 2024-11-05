@@ -29,7 +29,7 @@
             },
             "pointsArrayPath": "points"
         },
-        "brandB": {
+        "39df89f9-ae63-444f-8dff-43effe86d52f": {
             "name": "Brand B",
             "api_base_url": "https://mongodb-typescript-api.onrender.com",
             "endpoints": {
