@@ -233,13 +233,16 @@ const transferPoints = async (consumerId: string, fromBrandId: string, toBrandId
     const futureDate = new Date(currentDate);
 
     futureDate.setDate(futureDate.getDate() + EXPIRY_DAYS_FOR_NEWLY_ISSUED_POINTS);
+    // 0.5 conversion rate means 1 point is 0.5 rs
+    const pointsB = points * fromBrand.brand.conversionRate! / toBrand.brand.conversionRate!;
 
     let pointsTransfer = await prisma.pointsTransfer.create({
         data: {
             fromBrandId: fromBrandId,
             consumerId: consumerId,
             toBrandId: toBrandId,
-            pointsTransferred: points,
+            pointsTransferredFromA: points,
+            pointsTransferredToB: pointsB,
             createdAt: new Date(),
             transferStatus: TransferStatus.PENDING,
             toExpiryDate: futureDate

@@ -125,11 +125,11 @@ export class BrandAdapter {
         const today = new Date();
         const futureDate = new Date(today);
         futureDate.setDate(today.getDate() + EXPIRY_DAYS_FOR_NEWLY_ISSUED_POINTS);
-        const response = await makeApiCall(this.brandConfig, 'transferPoints', 'PUT', payload, {}, {}, { points: points, userId: fromUserId, expiration_date: futureDate.toDateString() });
+        const response = await makeApiCall(this.brandConfig, 'transferPoints', 'PUT', payload, { userId: fromUserId }, {}, { points: points, userId: fromUserId, expiration_date: futureDate.toDateString() });
 
         return {
-            transactionId: response.transaction_id,
-            status: response.status,
+            id: response.id,
+            message: response.message,
         };
     }
 }

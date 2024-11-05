@@ -1,11 +1,11 @@
 {
     "brands": {
-        "brandA": {
+        "f7976afc-f169-4d10-a434-87734e82658e": {
             "name": "Brand A",
-            "api_base_url": "https://loyalty-test-frontend.vercel.app/api",
+            "api_base_url": "https://mongodb-typescript-api.onrender.com",
             "endpoints": {
-                "getPoints": "/company1/points",
-                "transferPoints": "/company1/points"
+                "getPoints": "/Company1/api/points_details",
+                "transferPoints": "/Company1/api/put"
             },
             "auth": {
                 "type": "bearer_token123",
@@ -16,7 +16,36 @@
                 "expiration_date": "expiry"
             },
             "customHeaders": {
-                "API-KEY": "123456789"
+                "api-key": "ynyuwjkjkhpmrjccocaqqcfcpurmmsqb"
+            },
+            "queryParams": {
+                "phone": "{userId}"
+            },
+            "customBodyParams": {
+                "transferPoints": {
+                    "points": "{points}",
+                    "expiry": "{expiration_date}"
+                }
+            },
+            "pointsArrayPath": "points"
+        },
+        "brandB": {
+            "name": "Brand B",
+            "api_base_url": "https://mongodb-typescript-api.onrender.com",
+            "endpoints": {
+                "getPoints": "/Company2/api/points_details",
+                "transferPoints": "/Company2/api/put"
+            },
+            "auth": {
+                "type": "bearer_token123",
+                "token_url": "https://api.brandA.com/oauth/token"
+            },
+            "schema": {
+                "points": "points",
+                "expiration_date": "expiry"
+            },
+            "customHeaders": {
+                "API-KEY": "ztmxiyxsjhhmeihpjorzqmnwvsnjjocn"
             },
             "queryParams": {
                 "email": "{userId}"
@@ -29,12 +58,12 @@
             },
             "pointsArrayPath": "points"
         },
-        "brandB": {
-            "name": "Brand B",
-            "api_base_url": "https://loyalty-test-frontend.vercel.app/api",
+        "brandC": {
+            "name": "Brand C",
+            "api_base_url": "https://mongodb-typescript-api.onrender.com",
             "endpoints": {
-                "getPoints": "/company1/points",
-                "transferPoints": "/company1/points"
+                "getPoints": "/Company3/api/points_details",
+                "transferPoints": "/Company3/api/put"
             },
             "auth": {
                 "type": "bearer_token123",
@@ -45,7 +74,36 @@
                 "expiration_date": "expiry"
             },
             "customHeaders": {
-                "API-KEY": "123456789"
+                "api-key": "lcbrvkeqamxeuasabljjetkudbmajneb"
+            },
+            "queryParams": {
+                "phone": "{userId}"
+            },
+            "customBodyParams": {
+                "transferPoints": {
+                    "points": "{points}",
+                    "expiry": "{expiration_date}"
+                }
+            },
+            "pointsArrayPath": "points"
+        },
+        "brandD": {
+            "name": "Brand 4",
+            "api_base_url": "https://mongodb-typescript-api.onrender.com",
+            "endpoints": {
+                "getPoints": "/Company4/api/points_details",
+                "transferPoints": "/Company4/api/put"
+            },
+            "auth": {
+                "type": "bearer_token123",
+                "token_url": "https://api.brandA.com/oauth/token"
+            },
+            "schema": {
+                "points": "points",
+                "expiration_date": "expiry"
+            },
+            "customHeaders": {
+                "api-key": "dtqcehahwitpgqsaxzwkcpszabmtxidc"
             },
             "queryParams": {
                 "email": "{userId}"

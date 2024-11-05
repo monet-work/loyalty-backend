@@ -156,20 +156,22 @@ model ConsumerBrandAccount {
 }
 
 model PointsTransfer {
-  id                String         @id @default(uuid()) // Unique transfer ID
-  fromBrandId       String // The brand where points are deducted
-  toBrandId         String // The brand where new points are issued
-  consumerId        String // Consumer involved in the transfer
-  pointsTransferred Float // Number of points transferred
-  transferStatus    TransferStatus @default(PENDING) // Tracks success/failure of transfer
-  createdAt         DateTime       @default(now()) // When the transfer was initiated
-  completedAt       DateTime? // Optional: When the transfer was completed
-  toExpiryDate      DateTime // Expiration of the issued points in the destination brand
-
+  id                     String         @id @default(uuid()) // Unique transfer ID
+  fromBrandId            String // The brand where points are deducted
+  toBrandId              String // The brand where new points are issued
+  consumerId             String // Consumer involved in the transfer
+  pointsTransferredFromA Float // Number of points transferred
+  pointsTransferredToB   Float
+  transferStatus         TransferStatus @default(PENDING) // Tracks success/failure of transfer
+  createdAt              DateTime       @default(now()) // When the transfer was initiated
+  completedAt            DateTime? // Optional: When the transfer was completed
+  toExpiryDate           DateTime // Expiration of the issued points in the destination brand
+  brandATransactionID    String?
+  brandBTransactionID    String?
   // Relations
-  consumer  Consumer @relation(fields: [consumerId], references: [id])
-  fromBrand Brand    @relation("FromBrand", fields: [fromBrandId], references: [id])
-  toBrand   Brand    @relation("ToBrand", fields: [toBrandId], references: [id])
+  consumer               Consumer       @relation(fields: [consumerId], references: [id])
+  fromBrand              Brand          @relation("FromBrand", fields: [fromBrandId], references: [id])
+  toBrand                Brand          @relation("ToBrand", fields: [toBrandId], references: [id])
 
   @@map("points_transfers")
 }

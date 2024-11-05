@@ -42,8 +42,8 @@ export interface Config {
 }
 
 export interface TransferResponse {
-    transactionId: string;
-    status: string;
+    id: string;
+    message: string;
 }
 
 export type PartialBrand = Partial<Brand>;
