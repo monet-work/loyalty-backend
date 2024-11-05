@@ -257,7 +257,7 @@ const transferPoints = async (consumerId: string, fromBrandId: string, toBrandId
     // Directly make the update call to the brand A to see if 100 points can be used
     // const resA = await brandAPIService.update(brandA);
     const brandAAdapter = new BrandAdapter(fromBrandId);
-    const transferResponse = await brandAAdapter.transferPoints(fromBrand.email ? fromBrand.email : fromBrand.countryCode! + fromBrand.mobileNumber!, -1 * Number(pointsTransfer));
+    const transferResponse = await brandAAdapter.transferPoints(fromBrand.email ? fromBrand.email : fromBrand.countryCode! + fromBrand.mobileNumber!, -1 * Number(points));
     // console.log('Transfer Response:', transferResponse);
 
     pointsTransfer = await prisma.pointsTransfer.update({
