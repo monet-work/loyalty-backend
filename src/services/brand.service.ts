@@ -3,6 +3,7 @@ import { Brand, BrandUser, Consumer, Prisma, Role, UserRole } from '@prisma/clie
 import httpStatus from 'http-status';
 import prisma from '../client';
 import ApiError from '../utils/ApiError';
+import { BrandDashboardResponse } from '../config/brand-types';
 
 const getBrandUserByMobileNumber = async (
     countryCode: string,
@@ -226,11 +227,50 @@ const updateBusinessInfo = async <Key extends keyof Brand>(
     return brand;
 };
 
+const getDashboardDetails = async (
+    brandId: string
+): Promise<BrandDashboardResponse> => {
+    // create role for this user in the user role table
+    // insert user into the consumer table
+    // Second query: Use the userId from the previous query to create a post
+    const numberOfConsumers = await prisma.consumerBrandAccount.count({
+        where: {
+            brandId: brandId,
+            verified: true
+        }
+    });
+
+    const totalTradedInPoints = await prisma.pointsTransfer.aggregate({
+        _sum: {
+            pointsTransferredFromA: true
+        },
+        where: {
+            fromBrandId: brandId
+        }
+    });
+
+    const totalTradedOutPoints = await prisma.pointsTransfer.aggregate({
+        _sum: {
+            pointsTransferredToB: true
+        },
+        where: {
+            toBrandId: brandId
+        }
+    });
+
+    return {
+        numberOfConsumers: numberOfConsumers,
+        totalTradedInPoints: totalTradedInPoints._sum?.pointsTransferredFromA ? totalTradedInPoints._sum?.pointsTransferredFromA : 0,
+        totalTradedOutPoints: totalTradedOutPoints._sum?.pointsTransferredToB ? totalTradedOutPoints._sum?.pointsTransferredToB : 0
+    };
+};
+
 export default {
     getBrandUserByMobileNumber,
     insertBrand,
     updateBrand,
     insertBrandPOC,
     updateEmailVerified,
-    updateBusinessInfo
+    updateBusinessInfo,
+    getDashboardDetails
 };

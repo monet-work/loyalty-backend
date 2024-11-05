@@ -46,4 +46,10 @@ export interface TransferResponse {
     message: string;
 }
 
+export interface BrandDashboardResponse {
+    numberOfConsumers: number | null;
+    totalTradedInPoints: number | null;
+    totalTradedOutPoints: number | null;
+}
+
 export type PartialBrand = Partial<Brand>;

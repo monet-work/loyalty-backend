@@ -9,9 +9,21 @@ import authService from '../services/auth.service';
 
 const getDashboard = catchAsync(async (req, res) => {
     // console.log("getDashboard: ", req.user);
+    const brandId = ((req.user as any).brand as Brand).id;
+
+    const dashboard = await brandService.getDashboardDetails(brandId);
+
+    if (!dashboard) {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR)
+            .send({
+                message: "Failed to get dashboard details for the brand"
+            });
+        return;
+    }
     res.status(200)
         .send({
-            message: "Apple"
+            ...dashboard,
+            message: "Dashboard details for brand fetched successfully"
         });
     return;
 });
