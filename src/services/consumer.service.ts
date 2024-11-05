@@ -226,7 +226,7 @@ const transferPoints = async (consumerId: string, fromBrandId: string, toBrandId
         throw new ApiError(httpStatus.NOT_FOUND, "Destination Brand not linked");
     }
 
-    if (fromBrand.brand.brandIndustry === fromBrand.brand.brandIndustry) {
+    if (fromBrand.brand.brandIndustry === toBrand.brand.brandIndustry) {
         throw new ApiError(httpStatus.FORBIDDEN, "Points conversion not allowed in the same category");
     }
 
