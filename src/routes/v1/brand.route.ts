@@ -55,7 +55,7 @@ router
 
 router
     .route(BRAND_ROUTES.findTransactions)
-    .put(authBrand('Brand:findTransactions'), validate(brandValidation.findTransactions), brandController.findTransactions);
+    .get(authBrand('Brand:findTransactions'), validate(brandValidation.findTransactions), brandController.findTransactions);
 
 // router
 //     .route('/:customerId/points')
