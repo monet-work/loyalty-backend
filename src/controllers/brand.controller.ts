@@ -75,8 +75,39 @@ const findTransactions = catchAsync(async (req, res) => {
     }
 });
 
+const findTransactionById = catchAsync(async (req, res) => {
+    const brandId = ((req.user as any).brand as Brand).id;
+    const transactionId = req.params.transactionId;
+
+    const transaction = await brandService.findTransactionById(transactionId);
+
+    if (transaction) {
+        // brand's email has been verified successfully
+        if (transaction.fromBrandId === brandId || transaction.toBrandId === brandId) {
+            res.status(httpStatus.OK)
+                .send({
+                    message: "Transaction fetched successfully.",
+                    transaction
+                });
+            return;
+        }
+        res.status(httpStatus.UNAUTHORIZED)
+            .send({
+                message: "Brand unauthorised to see this transaction",
+            });
+        return;
+    } else {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR)
+            .send({
+                message: "Failed to find transaction."
+            });
+        return;
+    }
+});
+
 export default {
     getDashboard,
     updateBusinessInfo,
-    findTransactions
+    findTransactions,
+    findTransactionById
 };

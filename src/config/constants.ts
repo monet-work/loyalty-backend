@@ -28,6 +28,7 @@ export const BRAND_ROUTES = {
     "verifyEmailRequest": "/:brandId/verify-email",
     "updateBusinessInfo": "/:brandId/business-info",
     "findTransactions": "/:brandId/transactions",
+    "findTransaction": "/:brandId/transactions/:transactionId",
 };
 
 export const AUTH_ROUTES = {

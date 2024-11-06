@@ -29,6 +29,7 @@ const verifyCallback =
             const verifyEmailMatch = req.originalUrl.match(/\/v1\/brands\/([\w-]+)\/verify-email$/);
             const updateBusinessInfoMatch = req.originalUrl.match(/\/v1\/brands\/([\w-]+)\/business-info$/);
             const transactionsMatch = req.originalUrl.match(/\/v1\/brands\/([\w-]+)\/transactions$/);
+            const transactionMatch = req.originalUrl.match(/\/v1\/brands\/([\w-]+)\/transactions\/([\w-]+)$/);
 
             // console.log("match: ", match);
 
@@ -131,7 +132,7 @@ const verifyCallback =
                     return reject(new ApiError(INTEGRATION_COMPLETED_STATUS, "We are reviewing and will work with you to complete the integration with our systems."));
                 }
 
-                const matchBrand = transactionsMatch;
+                const matchBrand = transactionsMatch || transactionMatch;
 
                 if (matchBrand && user.brand?.id !== matchBrand[1]) {
                     return reject(new ApiError(httpStatus.UNAUTHORIZED, 'Unauthorized access'));

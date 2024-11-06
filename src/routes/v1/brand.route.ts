@@ -57,6 +57,10 @@ router
     .route(BRAND_ROUTES.findTransactions)
     .get(authBrand('Brand:findTransactions'), validate(brandValidation.findTransactions), brandController.findTransactions);
 
+router
+    .route(BRAND_ROUTES.findTransaction)
+    .get(authBrand('Brand:findTransaction'), validate(brandValidation.findTransaction), brandController.findTransactionById);
+
 // router
 //     .route('/:customerId/points')
 //     .get(auth('findPoints'), validate(customerValidation.findPoints), customerController.findPoints);

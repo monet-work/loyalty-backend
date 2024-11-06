@@ -3,7 +3,7 @@ import { Brand, BrandUser, Consumer, PointsTransfer, Prisma, Role, UserRole } fr
 import httpStatus from 'http-status';
 import prisma from '../client';
 import ApiError from '../utils/ApiError';
-import { BrandDashboardResponse } from '../config/brand-types';
+import { BrandDashboardResponse, PartialPointTransfer } from '../config/brand-types';
 
 const getBrandUserByMobileNumber = async (
     countryCode: string,
@@ -292,10 +292,9 @@ const getDashboardDetails = async (
 
 const findTransactions = async (
     brandId: string
-): Promise<PointsTransfer[] | null> => {
-    console.log("brandId: ", brandId);
+): Promise<PartialPointTransfer[] | null> => {
     const transactions = await prisma.pointsTransfer.findMany({
-        include: {
+        select: {
             fromBrand: {
                 select: {
                     name: true,
@@ -307,7 +306,11 @@ const findTransactions = async (
                     name: true,
                     profilePictureURL: true
                 }
-            }
+            },
+            id: true,
+            consumerId: true,
+            pointsTransferredFromA: true,
+            pointsTransferredToB: true
         },
         where: {
             OR: [
@@ -326,6 +329,44 @@ const findTransactions = async (
     return transactions;
 }
 
+const findTransactionById = async (
+    transactionId: string
+): Promise<PointsTransfer | null> => {
+    const transaction = await prisma.pointsTransfer.findFirst({
+        include: {
+            fromBrand: {
+                select: {
+                    name: true,
+                    profilePictureURL: true
+                }
+            },
+            toBrand: {
+                select: {
+                    name: true,
+                    profilePictureURL: true
+                }
+            },
+            consumer: {
+                select: {
+                    name: true,
+                    countryCode: true,
+                    mobileNumber: true,
+                    profilePictureURL: true
+                }
+            }
+        },
+        where: {
+            id: transactionId
+        }
+    });
+
+    if (!transaction) {
+        throw new ApiError(httpStatus.NOT_FOUND, "Transaction not found");
+    }
+
+    return transaction;
+}
+
 export default {
     getBrandUserByMobileNumber,
     insertBrand,
@@ -334,5 +375,6 @@ export default {
     updateEmailVerified,
     updateBusinessInfo,
     getDashboardDetails,
-    findTransactions
+    findTransactions,
+    findTransactionById
 };
