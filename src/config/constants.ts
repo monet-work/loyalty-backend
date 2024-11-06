@@ -12,6 +12,7 @@ export const CONSUMER_ROUTES = {
     "brandAccounts": "/:consumerId/brand-accounts",
     "linkedBrandAccounts": "/:consumerId/linked-brand-accounts",
     "linkedBrandAccount": "/:consumerId/linked-brand-accounts/:brandAccountId",
+    "fetchDashboard": "/dashboard-details"
 
 };
 

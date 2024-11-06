@@ -15,16 +15,27 @@ const sendData = (res: Response, data: object) => {
     res.write(`data: ${JSON.stringify(data)}\n\n`);
 };
 
-const getDashboard = catchAsync(async (req, res) => {
+const getDashboardDetails = catchAsync(async (req, res) => {
     // console.log("getDashboard: ", req.user);
-    const consumerId = (req.user as Consumer).id;
+    const sessionId = req.query.sessionId as string;
+    const consumerId = req.query.consumerId as string;
 
-    const accounts = await consumerService.findLinkedBrandAccounts(consumerId);
+    const consumerSession = await consumerService.findByDashboardSessionId(sessionId, consumerId);
+
+    if (!consumerSession) {
+        res.status(httpStatus.UNAUTHORIZED)
+            .send({
+                message: "Session not authorized"
+            });
+        return;
+    }
 
     // Set headers for SSE
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
+
+    const accounts = await consumerService.findLinkedBrandAccounts(consumerId);
 
     const brandAdapters: BrandAdapter[] = [];
 
@@ -55,6 +66,28 @@ const getDashboard = catchAsync(async (req, res) => {
         res.write('data: {}\n\n');
         res.end();
     });
+});
+
+const getDashboard = catchAsync(async (req, res) => {
+    // console.log("getDashboard: ", req.user);
+    const consumerId = (req.user as Consumer).id;
+
+    const consumerSession = await consumerService.insertSessionForConsumer(consumerId);
+
+    if (consumerSession) {
+        res.status(httpStatus.OK)
+            .send({
+                session: consumerSession,
+                message: "Session created successfully"
+            });
+        return;
+    } else {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR)
+            .send({
+                message: "An unexpected error occurred while creating the dashboard session for consumer."
+            });
+        return;
+    }
 });
 
 const _linkBrandProfile = catchAsync(async (req, res) => {
@@ -274,6 +307,7 @@ const linkedBrandAccount = catchAsync(async (req, res) => {
 
 export default {
     getDashboard,
+    getDashboardDetails,
     linkBrandProfile,
     verifyBrandProfileRequest,
     transferPoints,

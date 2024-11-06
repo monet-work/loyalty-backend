@@ -65,6 +65,10 @@ router
     .route(CONSUMER_ROUTES.linkedBrandAccount)
     .get(auth('Consumer:linkedBrandAccount'), validate(consumerValidation.linkedBrandAccount), consumerController.linkedBrandAccount);
 
+router
+    .route(CONSUMER_ROUTES.fetchDashboard)
+    .get(consumerController.getDashboardDetails);
+
 
 // router
 //     .route('/:customerId/points')

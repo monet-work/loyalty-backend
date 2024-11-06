@@ -26,6 +26,7 @@ model Consumer {
   tokens                   Token[]
   ConsumerBrandAccount     ConsumerBrandAccount[]
   PointsTransfer           PointsTransfer[]
+  ConsumerSessionId        ConsumerSessionId[]
 
   @@unique([countryCode, mobileNumber])
   @@map("consumers") // Optional: maps this model to the "consumers" table in the database
@@ -174,6 +175,18 @@ model PointsTransfer {
   toBrand                Brand          @relation("ToBrand", fields: [toBrandId], references: [id])
 
   @@map("points_transfers")
+}
+
+model ConsumerSessionId {
+  id         String   @id @default(uuid()) // Unique transfer ID
+  consumerId String // Consumer involved in the transfer
+  consumer   Consumer @relation(fields: [consumerId], references: [id])
+  sessionId  String
+  createdAt  DateTime @default(now()) // Created at timestamp
+  updatedAt  DateTime @default(now()) // Updated at timestamp
+
+  @@unique([consumerId, sessionId])
+  @@map("consumer_session_ids")
 }
 
 enum TransferStatus {

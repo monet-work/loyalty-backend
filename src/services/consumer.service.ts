@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Brand, Consumer, ConsumerBrandAccount, PointsTransfer, Prisma, Role, TransferStatus } from '@prisma/client';
+import { Brand, Consumer, ConsumerBrandAccount, PointsTransfer, Prisma, Role, TransferStatus, ConsumerSessionId } from '@prisma/client';
 import httpStatus from 'http-status';
 import prisma from '../client';
 import ApiError from '../utils/ApiError';
@@ -7,6 +7,7 @@ import { EXPIRY_DAYS_FOR_NEWLY_ISSUED_POINTS } from '../config/constants';
 import { PartialBrand } from '../config/brand-types';
 import { BrandAdapter } from '../adapter/brand-adapter';
 import { ConsumerDashboardResponse } from '../config/consumer-types';
+import { uuidV4 } from 'web3-utils';
 
 const getConsumerByMobileNumber = async <Key extends keyof Consumer>(
     countryCode: string,
@@ -439,6 +440,51 @@ const getDashboardDetails = async (
     };
 };
 
+const findByDashboardSessionId = async (
+    sessionId: string = "sessionId",
+    consumerId: string = "consumerId"
+): Promise<ConsumerSessionId | null> => {
+    const consumerSession = await prisma.consumerSessionId.findFirst({
+        where: {
+            consumerId: consumerId,
+            sessionId: sessionId
+        }
+    });
+
+    await prisma.consumerSessionId.deleteMany({
+        where: {
+            consumerId: consumerId
+        }
+    });
+
+    if (!consumerSession) {
+        throw new ApiError(httpStatus.NOT_FOUND, "Session not found");
+    }
+
+    return consumerSession;
+}
+
+const insertSessionForConsumer = async (consumerId: string): Promise<ConsumerSessionId | null> => {
+    await prisma.consumerSessionId.deleteMany({
+        where: {
+            consumerId: consumerId
+        }
+    });
+
+    const consumerSession = await prisma.consumerSessionId.create({
+        data: {
+            consumerId: consumerId,
+            sessionId: uuidV4()
+        }
+    });
+
+    if (!consumerSession) {
+        throw new ApiError(httpStatus.NOT_FOUND, "Session not found");
+    }
+
+    return consumerSession;
+}
+
 export default {
     getConsumerByMobileNumber,
     insertConsumer,
@@ -451,5 +497,7 @@ export default {
     findBrandsForProfile,
     findLinkedBrandAccounts,
     findLinkedBrandAccountById,
-    getDashboardDetails
+    getDashboardDetails,
+    findByDashboardSessionId,
+    insertSessionForConsumer
 };
