@@ -53,6 +53,10 @@ router
     .route(BRAND_ROUTES.updateBusinessInfo)
     .put(authBrand('Brand:updateBusinessInfo'), validate(brandValidation.updateBusinessInfo), brandController.updateBusinessInfo);
 
+router
+    .route(BRAND_ROUTES.findTransactions)
+    .put(authBrand('Brand:findTransactions'), validate(brandValidation.findTransactions), brandController.findTransactions);
+
 // router
 //     .route('/:customerId/points')
 //     .get(auth('findPoints'), validate(customerValidation.findPoints), customerController.findPoints);

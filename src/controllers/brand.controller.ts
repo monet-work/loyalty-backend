@@ -53,7 +53,30 @@ const updateBusinessInfo = catchAsync(async (req, res) => {
     }
 });
 
+const findTransactions = catchAsync(async (req, res) => {
+    const brandId = ((req.user as any).brand as Brand).id;
+
+    const transactions = await brandService.findTransactions(brandId);
+
+    if (transactions) {
+        // brand's email has been verified successfully
+        res.status(httpStatus.OK)
+            .send({
+                message: "Transactions fetched successfully.",
+                transactions
+            });
+        return;
+    } else {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR)
+            .send({
+                message: "Failed to find transactions. Try again later."
+            });
+        return;
+    }
+});
+
 export default {
     getDashboard,
-    updateBusinessInfo
+    updateBusinessInfo,
+    findTransactions
 };

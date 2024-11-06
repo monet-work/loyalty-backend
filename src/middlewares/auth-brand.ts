@@ -28,6 +28,7 @@ const verifyCallback =
             const emailMatch = req.originalUrl.match(/\/v1\/brands\/([\w-]+)\/send-email$/);
             const verifyEmailMatch = req.originalUrl.match(/\/v1\/brands\/([\w-]+)\/verify-email$/);
             const updateBusinessInfoMatch = req.originalUrl.match(/\/v1\/brands\/([\w-]+)\/business-info$/);
+            const transactionsMatch = req.originalUrl.match(/\/v1\/brands\/([\w-]+)\/transactions$/);
 
             // console.log("match: ", match);
 
@@ -122,13 +123,18 @@ const verifyCallback =
                     return reject(new ApiError(BUSINESS_INFO_REQUIRED_STATUS, 'Please complete your business info first'));
                 }
 
-                console.log("req.params: ", req.params);
                 if (!user.brand?.isEmailVerified) {
                     return reject(new ApiError(EMAIL_VERIFICATION_REQUIRED_STATUS, "Please verify your email first."));
                 }
 
                 if (!user.brand?.isIntegrationCompleted) {
                     return reject(new ApiError(INTEGRATION_COMPLETED_STATUS, "We are reviewing and will work with you to complete the integration with our systems."));
+                }
+
+                const matchBrand = transactionsMatch;
+
+                if (matchBrand && user.brand?.id !== matchBrand[1]) {
+                    return reject(new ApiError(httpStatus.UNAUTHORIZED, 'Unauthorized access'));
                 }
 
                 req.user = user;

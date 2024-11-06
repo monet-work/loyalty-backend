@@ -109,6 +109,12 @@ const updateBusinessInfo = {
     })
 };
 
+const findTransactions = {
+    params: Joi.object().keys({
+        brandId: Joi.string().required()
+    })
+};
+
 export default {
     verifyOTP,
     signUp,
@@ -120,5 +126,6 @@ export default {
     verifyPOCRequest,
     sendEmailRequest,
     verifyEmailRequest,
-    updateBusinessInfo
+    updateBusinessInfo,
+    findTransactions
 };

@@ -11,7 +11,8 @@ export const CONSUMER_ROUTES = {
     "transferPoints": "/:consumerId/transfer-points",
     "brandAccounts": "/:consumerId/brand-accounts",
     "linkedBrandAccounts": "/:consumerId/linked-brand-accounts",
-    "linkedBrandAccount": "/:consumerId/linked-brand-accounts/:brandAccountId"
+    "linkedBrandAccount": "/:consumerId/linked-brand-accounts/:brandAccountId",
+
 };
 
 export const BRAND_ROUTES = {
@@ -25,7 +26,8 @@ export const BRAND_ROUTES = {
     "verifyPOCRequest": "/:brandId/pocs/verify-otp",
     "sendEmailRequest": "/:brandId/send-email",
     "verifyEmailRequest": "/:brandId/verify-email",
-    "updateBusinessInfo": "/:brandId/business-info"
+    "updateBusinessInfo": "/:brandId/business-info",
+    "findTransactions": "/:brandId/transactions",
 };
 
 export const AUTH_ROUTES = {

@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Brand, BrandUser, Consumer, Prisma, Role, UserRole } from '@prisma/client';
+import { Brand, BrandUser, Consumer, PointsTransfer, Prisma, Role, UserRole } from '@prisma/client';
 import httpStatus from 'http-status';
 import prisma from '../client';
 import ApiError from '../utils/ApiError';
@@ -290,6 +290,39 @@ const getDashboardDetails = async (
     };
 };
 
+const findTransactions = async (
+    brandId: string
+): Promise<PointsTransfer[] | null> => {
+    const transactions = await prisma.pointsTransfer.findMany({
+        include: {
+            fromBrand: {
+                select: {
+                    name: true,
+                    profilePictureURL: true
+                }
+            },
+            toBrand: {
+                select: {
+                    name: true,
+                    profilePictureURL: true
+                }
+            }
+        },
+        where: {
+            OR: {
+                fromBrandId: brandId,
+                toBrandId: brandId
+            }
+        }
+    });
+
+    if (!transactions) {
+        throw new ApiError(httpStatus.NOT_FOUND, "Transactions not found");
+    }
+
+    return transactions;
+}
+
 export default {
     getBrandUserByMobileNumber,
     insertBrand,
@@ -297,5 +330,6 @@ export default {
     insertBrandPOC,
     updateEmailVerified,
     updateBusinessInfo,
-    getDashboardDetails
+    getDashboardDetails,
+    findTransactions
 };
