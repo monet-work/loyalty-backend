@@ -241,6 +241,9 @@ const getDashboardDetails = async (
     });
 
     const totalTradedInPoints = await prisma.pointsTransfer.aggregate({
+        _count: {
+            id: true
+        },
         _sum: {
             pointsTransferredFromA: true
         },
@@ -250,6 +253,9 @@ const getDashboardDetails = async (
     });
 
     const totalTradedOutPoints = await prisma.pointsTransfer.aggregate({
+        _count: {
+            id: true
+        },
         _sum: {
             pointsTransferredToB: true
         },
@@ -261,7 +267,8 @@ const getDashboardDetails = async (
     return {
         numberOfConsumers: numberOfConsumers,
         totalTradedInPoints: totalTradedInPoints._sum?.pointsTransferredFromA ? totalTradedInPoints._sum?.pointsTransferredFromA : 0,
-        totalTradedOutPoints: totalTradedOutPoints._sum?.pointsTransferredToB ? totalTradedOutPoints._sum?.pointsTransferredToB : 0
+        totalTradedOutPoints: totalTradedOutPoints._sum?.pointsTransferredToB ? totalTradedOutPoints._sum?.pointsTransferredToB : 0,
+        totalTransactions: totalTradedInPoints._count.id + totalTradedOutPoints._count.id
     };
 };
 

@@ -6,6 +6,7 @@ import ApiError from '../utils/ApiError';
 import { EXPIRY_DAYS_FOR_NEWLY_ISSUED_POINTS } from '../config/constants';
 import { PartialBrand } from '../config/brand-types';
 import { BrandAdapter } from '../adapter/brand-adapter';
+import { ConsumerDashboardResponse } from '../config/consumer-types';
 
 const getConsumerByMobileNumber = async <Key extends keyof Consumer>(
     countryCode: string,
@@ -401,6 +402,43 @@ const findLinkedBrandAccountById = async (consumerId: string, brandAccountId: st
     return brandAccount;
 }
 
+const getDashboardDetails = async (
+    consumerId: string
+): Promise<ConsumerDashboardResponse> => {
+    // create role for this user in the user role table
+    // insert user into the consumer table
+    // Second query: Use the userId from the previous query to create a post
+    // const numberOfConsumers = await prisma.consumerBrandAccount.count({
+    //     where: {
+    //         brandId: brandId,
+    //         verified: true
+    //     }
+    // });
+
+    // const totalTradedInPoints = await prisma.pointsTransfer.aggregate({
+    //     _sum: {
+    //         pointsTransferredFromA: true
+    //     },
+    //     where: {
+    //         fromBrandId: brandId
+    //     }
+    // });
+
+    // const totalTradedOutPoints = await prisma.pointsTransfer.aggregate({
+    //     _sum: {
+    //         pointsTransferredToB: true
+    //     },
+    //     where: {
+    //         toBrandId: brandId
+    //     }
+    // });
+
+    return {
+        id: consumerId,
+        message: "hello"
+    };
+};
+
 export default {
     getConsumerByMobileNumber,
     insertConsumer,
@@ -412,5 +450,6 @@ export default {
     findBrandAccounts,
     findBrandsForProfile,
     findLinkedBrandAccounts,
-    findLinkedBrandAccountById
+    findLinkedBrandAccountById,
+    getDashboardDetails
 };

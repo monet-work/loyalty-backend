@@ -10,10 +10,22 @@ import { BrandAdapter } from '../adapter/brand-adapter';
 import { PointEntry } from '../config/brand-types';
 
 const getDashboard = catchAsync(async (req, res) => {
-    console.log("getDashboard: ", req.user);
+    // console.log("getDashboard: ", req.user);
+    const consumerId = (req.user as Consumer).id;
+
+    const dashboard = await consumerService.getDashboardDetails(consumerId);
+
+    if (!dashboard) {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR)
+            .send({
+                message: "Failed to get dashboard details for the consumer"
+            });
+        return;
+    }
     res.status(200)
         .send({
-            message: "Apple"
+            ...dashboard,
+            message: "Dashboard details for consumer fetched successfully"
         });
     return;
 });
