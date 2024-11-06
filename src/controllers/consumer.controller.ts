@@ -99,23 +99,35 @@ const verifyBrandProfileRequest = catchAsync(async (req, res) => {
         }
 
         if (otpData) {
-            consumerBrandAccount = await consumerService.verifyConsumerBrandAccount(id, requestId);
+            const brandAdapter = new BrandAdapter(consumerBrandAccount.brandId);
 
-            if (consumerBrandAccount) {
-                res.status(httpStatus.OK)
+            // const userId = "alice@example.com";
+
+            // Fetch points for the user
+            try {
+                const points: PointEntry[] = await brandAdapter.fetchPoints(consumerBrandAccount.email ? consumerBrandAccount.email : consumerBrandAccount.countryCode! + consumerBrandAccount.mobileNumber!);
+
+                const totalPoints = points.reduce((accumulator, point) => accumulator + Number(point.points), 0);
+
+                consumerBrandAccount = await consumerService.verifyConsumerBrandAccount(id, requestId);
+
+                if (consumerBrandAccount) {
+                    res.status(httpStatus.OK)
+                        .send({
+                            message: "OTP verified successfully.",
+                            id: consumerBrandAccount.id,
+                            points: totalPoints
+                        });
+                    return;
+                }
+            } catch (e) {
+                console.log(e);
+                res.status(httpStatus.INTERNAL_SERVER_ERROR)
                     .send({
-                        message: "OTP verified successfully.",
-                        id: consumerBrandAccount.id,
-                        points: 100
+                        message: "Failed to link consumer profile with brand.",
                     });
                 return;
             }
-
-            res.status(httpStatus.INTERNAL_SERVER_ERROR)
-                .send({
-                    message: "Failed to link consumer profile with brand.",
-                });
-            return;
         } else {
             res.status(httpStatus.BAD_REQUEST)
                 .send({
