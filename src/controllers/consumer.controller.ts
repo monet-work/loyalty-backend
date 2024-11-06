@@ -8,26 +8,53 @@ import { Consumer, Role, ConsumerBrandAccount } from '@prisma/client';
 import authService from '../services/auth.service';
 import { BrandAdapter } from '../adapter/brand-adapter';
 import { PointEntry } from '../config/brand-types';
+import { ConsumerDashboardResponse } from '../config/consumer-types';
+import { Response } from 'express';
+
+const sendData = (res: Response, data: object) => {
+    res.write(`data: ${JSON.stringify(data)}\n\n`);
+};
 
 const getDashboard = catchAsync(async (req, res) => {
     // console.log("getDashboard: ", req.user);
     const consumerId = (req.user as Consumer).id;
 
-    const dashboard = await consumerService.getDashboardDetails(consumerId);
+    const accounts = await consumerService.findLinkedBrandAccounts(consumerId);
 
-    if (!dashboard) {
-        res.status(httpStatus.INTERNAL_SERVER_ERROR)
-            .send({
-                message: "Failed to get dashboard details for the consumer"
+    // Set headers for SSE
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+
+    const brandAdapters: BrandAdapter[] = [];
+
+    accounts!.forEach(account => {
+        const brandAdapter = new BrandAdapter(account.brandId);
+        brandAdapters.push(brandAdapter);
+    });
+
+    const apiCalls: Promise<any>[] = [];
+
+    brandAdapters.forEach((brandAdapter, idx) => {
+        apiCalls.push(brandAdapter.fetchPoints(accounts![idx].email ? accounts![idx].email! : accounts![idx].countryCode! + accounts![idx].mobileNumber!));
+    })
+
+    apiCalls.forEach((apiCall, index) => {
+        apiCall
+            .then(data => {
+                sendData(res, { part: index + 1, points: data, account: accounts![index] });
+            })
+            .catch(error => {
+                sendData(res, { part: index + 1, error: 'Failed to fetch data' });
             });
-        return;
-    }
-    res.status(200)
-        .send({
-            ...dashboard,
-            message: "Dashboard details for consumer fetched successfully"
-        });
-    return;
+    });
+
+    // Send a 'complete' event once all API calls are finished
+    Promise.allSettled(apiCalls).then(() => {
+        res.write('event: complete\n');
+        res.write('data: {}\n\n');
+        res.end();
+    });
 });
 
 const _linkBrandProfile = catchAsync(async (req, res) => {
