@@ -51,6 +51,7 @@ export interface BrandDashboardResponse {
     totalTradedInPoints: number | null;
     totalTradedOutPoints: number | null;
     totalTransactions: number;
+    brand: PartialBrand;
 }
 
 export type PartialBrand = Partial<Brand>;

@@ -264,11 +264,29 @@ const getDashboardDetails = async (
         }
     });
 
+    const brand = await prisma.brand.findFirst({
+        select: {
+            id: true,
+            profilePictureURL: true,
+            name: true,
+            description: true,
+            brandSymbol: true
+        },
+        where: {
+            id: brandId
+        }
+    });
+
+    if (!brand) {
+        throw new ApiError(httpStatus.NOT_FOUND, "Brand not found");
+    }
+
     return {
         numberOfConsumers: numberOfConsumers,
         totalTradedInPoints: totalTradedInPoints._sum?.pointsTransferredFromA ? totalTradedInPoints._sum?.pointsTransferredFromA : 0,
         totalTradedOutPoints: totalTradedOutPoints._sum?.pointsTransferredToB ? totalTradedOutPoints._sum?.pointsTransferredToB : 0,
-        totalTransactions: totalTradedInPoints._count.id + totalTradedOutPoints._count.id
+        totalTransactions: totalTradedInPoints._count.id + totalTradedOutPoints._count.id,
+        brand: brand!
     };
 };
 
