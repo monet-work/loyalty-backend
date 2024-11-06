@@ -293,6 +293,7 @@ const getDashboardDetails = async (
 const findTransactions = async (
     brandId: string
 ): Promise<PointsTransfer[] | null> => {
+    console.log("brandId: ", brandId);
     const transactions = await prisma.pointsTransfer.findMany({
         include: {
             fromBrand: {
@@ -309,10 +310,12 @@ const findTransactions = async (
             }
         },
         where: {
-            OR: {
-                fromBrandId: brandId,
-                toBrandId: brandId
-            }
+            OR: [
+                {
+                    fromBrandId: brandId
+                },
+                { toBrandId: brandId }
+            ]
         }
     });
 
