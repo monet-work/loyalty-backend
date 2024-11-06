@@ -298,13 +298,15 @@ const findTransactions = async (
             fromBrand: {
                 select: {
                     name: true,
-                    profilePictureURL: true
+                    profilePictureURL: true,
+                    brandSymbol: true,
                 }
             },
             toBrand: {
                 select: {
                     name: true,
-                    profilePictureURL: true
+                    profilePictureURL: true,
+                    brandSymbol: true
                 }
             },
             id: true,
@@ -337,13 +339,15 @@ const findTransactionById = async (
             fromBrand: {
                 select: {
                     name: true,
-                    profilePictureURL: true
+                    profilePictureURL: true,
+                    brandSymbol: true
                 }
             },
             toBrand: {
                 select: {
                     name: true,
-                    profilePictureURL: true
+                    profilePictureURL: true,
+                    brandSymbol: true
                 }
             },
             consumer: {
