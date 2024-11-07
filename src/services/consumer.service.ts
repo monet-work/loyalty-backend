@@ -385,6 +385,7 @@ const findLinkedBrandAccountById = async (consumerId: string, brandAccountId: st
                     name: true,
                     profilePictureURL: true,
                     conversionRate: true,
+                    websiteURL: true
                 }
             }
         },
