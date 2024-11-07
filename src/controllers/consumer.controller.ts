@@ -291,7 +291,7 @@ const linkedBrandAccount = catchAsync(async (req, res) => {
 
         res.status(httpStatus.OK)
             .send({
-                brand: brandDetails,
+                account: brandDetails,
                 message: "Brand account fetched successfully",
                 totalPoints: totalPoints
             });
