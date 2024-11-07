@@ -61,11 +61,14 @@ const makeApiCall = async (
     }
 
     // Template the query parameters
+    console.log("--------------------QUERY PARAMS--------------------------------");
+    console.log(brandConfig.queryParams, queryParams);
     const templatedQueryParams = { ...brandConfig.queryParams, ...queryParams };
     const finalQueryParams: Record<string, string> = {};
     for (const [key, value] of Object.entries(templatedQueryParams)) {
-        finalQueryParams[key] = typeof value === 'string' ? templateString(value, pathParams) : value.toString();
+        finalQueryParams[key] = typeof value === 'string' ? templateString(value, queryParams) : value.toString();
     }
+    console.log(finalQueryParams);
 
     // Prepare body parameters and template them
     const baseBodyParams = brandConfig.customBodyParams && brandConfig.customBodyParams[endpoint]
@@ -102,7 +105,7 @@ export class BrandAdapter {
     }
 
     async fetchPoints(userId: string): Promise<PointEntry[]> {
-        const data = await makeApiCall(this.brandConfig, 'getPoints', 'GET', {}, { userId });
+        const data = await makeApiCall(this.brandConfig, 'getPoints', 'GET', {}, {}, { userId: userId });
 
         // Retrieve the points array based on pointsArrayPath
         const pointsArray: any[] = this.brandConfig.pointsArrayPath
@@ -125,7 +128,7 @@ export class BrandAdapter {
         const today = new Date();
         const futureDate = new Date(today);
         futureDate.setDate(today.getDate() + EXPIRY_DAYS_FOR_NEWLY_ISSUED_POINTS);
-        const response = await makeApiCall(this.brandConfig, 'transferPoints', 'PUT', payload, { userId: fromUserId }, {}, { points: points, userId: fromUserId, expiration_date: futureDate.toDateString() });
+        const response = await makeApiCall(this.brandConfig, 'transferPoints', 'PUT', payload, {}, { userId: fromUserId }, { points: points, userId: fromUserId, expiration_date: futureDate.toDateString() });
 
         return {
             id: response.id,

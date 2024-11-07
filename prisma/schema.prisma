@@ -59,6 +59,7 @@ model Brand {
   name                   String?                @unique
   description            String? // Optional description of the brand
   profilePictureURL      String? // Optional URL for the brand's profile picture
+  websiteURL             String? // Optional URL for the brand's website
   email                  String?
   isEmailVerified        Boolean                @default(false)
   emailRequestId         String?
