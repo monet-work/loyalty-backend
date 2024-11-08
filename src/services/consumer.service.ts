@@ -359,7 +359,8 @@ const findLinkedBrandAccounts = async (consumerId: string): Promise<ConsumerBran
                     name: true,
                     profilePictureURL: true,
                     conversionRate: true,
-                    websiteURL: true
+                    websiteURL: true,
+                    brandIndustry: true
                 }
             }
         },
