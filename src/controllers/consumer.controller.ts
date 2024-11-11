@@ -359,6 +359,27 @@ const findTransactionById = catchAsync(async (req, res) => {
     }
 });
 
+const getProfile = catchAsync(async (req, res) => {
+    const consumerId = (req.user as Consumer).id;
+
+    const profile = await consumerService.findProfileById(consumerId);
+
+    if (profile) {
+        res.status(httpStatus.OK)
+            .send({
+                profile: profile,
+                message: "Consumer profile fetched successfully",
+            });
+        return;
+    } else {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR)
+            .send({
+                message: "Failed to find profile."
+            });
+        return;
+    }
+});
+
 export default {
     getDashboard,
     getDashboardDetails,
@@ -369,5 +390,6 @@ export default {
     linkedBrandAccounts,
     linkedBrandAccount,
     findTransactions,
-    findTransactionById
+    findTransactionById,
+    getProfile
 };

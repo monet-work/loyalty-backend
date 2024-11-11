@@ -4,7 +4,7 @@ import httpStatus from 'http-status';
 import prisma from '../client';
 import ApiError from '../utils/ApiError';
 import { EXPIRY_DAYS_FOR_NEWLY_ISSUED_POINTS } from '../config/constants';
-import { PartialBrand, PartialPointTransfer } from '../config/brand-types';
+import { PartialBrand, PartialConsumer, PartialPointTransfer } from '../config/brand-types';
 import { BrandAdapter } from '../adapter/brand-adapter';
 import { ConsumerDashboardResponse } from '../config/consumer-types';
 import { uuidV4 } from 'web3-utils';
@@ -565,6 +565,28 @@ const findTransactionById = async (
     return transaction;
 }
 
+const findProfileById = async (
+    consumerId: string
+): Promise<PartialConsumer | null> => {
+    const profile = await prisma.consumer.findFirst({
+        select: {
+            id: true,
+            name: true,
+            description: true,
+            profilePictureURL: true
+        },
+        where: {
+            id: consumerId
+        }
+    });
+
+    if (!profile) {
+        throw new ApiError(httpStatus.NOT_FOUND, "Profile not found");
+    }
+
+    return profile;
+}
+
 export default {
     getConsumerByMobileNumber,
     insertConsumer,
@@ -581,5 +603,6 @@ export default {
     findByDashboardSessionId,
     insertSessionForConsumer,
     findTransactionById,
-    findTransactions
+    findTransactions,
+    findProfileById
 };

@@ -1,6 +1,6 @@
 // types.ts
 
-import { Brand, PointsTransfer } from "@prisma/client";
+import { Brand, BrandUser, Consumer, PointsTransfer } from "@prisma/client";
 
 // Represents a single entry of points with number of points and expiration date
 export interface PointEntry {
@@ -55,4 +55,6 @@ export interface BrandDashboardResponse {
 }
 
 export type PartialBrand = Partial<Brand>;
+export type PartialConsumer = Partial<Consumer>;
+export type PartialBrandUser = Partial<BrandUser>;
 export type PartialPointTransfer = Partial<PointsTransfer>;

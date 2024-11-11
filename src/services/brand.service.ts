@@ -3,7 +3,7 @@ import { Brand, BrandUser, Consumer, PointsTransfer, Prisma, Role, UserRole } fr
 import httpStatus from 'http-status';
 import prisma from '../client';
 import ApiError from '../utils/ApiError';
-import { BrandDashboardResponse, PartialPointTransfer } from '../config/brand-types';
+import { BrandDashboardResponse, PartialBrand, PartialBrandUser, PartialPointTransfer } from '../config/brand-types';
 
 const getBrandUserByMobileNumber = async (
     countryCode: string,
@@ -371,6 +371,39 @@ const findTransactionById = async (
     return transaction;
 }
 
+
+const findProfileById = async (
+    userId: string
+): Promise<PartialBrandUser | null> => {
+    const profile = await prisma.brandUser.findFirst({
+        include: {
+            brand: {
+                select: {
+                    id: true,
+                    name: true,
+                    profilePictureURL: true,
+                    description: true
+                }
+            },
+            userRole: {
+                select: {
+                    id: true,
+                    role: true
+                }
+            }
+        },
+        where: {
+            id: userId
+        }
+    });
+
+    if (!profile) {
+        throw new ApiError(httpStatus.NOT_FOUND, "Profile not found");
+    }
+
+    return profile;
+}
+
 export default {
     getBrandUserByMobileNumber,
     insertBrand,
@@ -380,5 +413,6 @@ export default {
     updateBusinessInfo,
     getDashboardDetails,
     findTransactions,
-    findTransactionById
+    findTransactionById,
+    findProfileById
 };

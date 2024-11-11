@@ -15,6 +15,7 @@ export const CONSUMER_ROUTES = {
     "fetchDashboard": "/dashboard-details",
     "findTransactions": "/:consumerId/transactions",
     "findTransaction": "/:consumerId/transactions/:transactionId",
+    "profile": "/profile-details"
 };
 
 export const BRAND_ROUTES = {
@@ -31,6 +32,7 @@ export const BRAND_ROUTES = {
     "updateBusinessInfo": "/:brandId/business-info",
     "findTransactions": "/:brandId/transactions",
     "findTransaction": "/:brandId/transactions/:transactionId",
+    "profile": "/profile-details"
 };
 
 export const AUTH_ROUTES = {

@@ -77,6 +77,10 @@ router
     .route(CONSUMER_ROUTES.findTransaction)
     .get(auth('Consumer:findTransaction'), validate(consumerValidation.findTransaction), consumerController.findTransactionById);
 
+router
+    .route(CONSUMER_ROUTES.profile)
+    .get(auth('Consumer:profile'), consumerController.getProfile);
+
 
 // router
 //     .route('/:customerId/points')

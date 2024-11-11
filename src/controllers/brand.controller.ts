@@ -4,7 +4,7 @@ import catchAsync from '../utils/catchAsync';
 import { brandService, consumerService, otpService } from '../services';
 import { sendOTP } from '../utils/otpless';
 import tokenService from '../services/token.service';
-import { Brand, Role } from '@prisma/client';
+import { Brand, BrandUser, Role } from '@prisma/client';
 import authService from '../services/auth.service';
 
 const getDashboard = catchAsync(async (req, res) => {
@@ -105,9 +105,31 @@ const findTransactionById = catchAsync(async (req, res) => {
     }
 });
 
+const getProfile = catchAsync(async (req, res) => {
+    const brandUserId = (req.user as BrandUser).id;
+
+    const profile = await brandService.findProfileById(brandUserId);
+
+    if (profile) {
+        res.status(httpStatus.OK)
+            .send({
+                profile: profile,
+                message: "Consumer profile fetched successfully",
+            });
+        return;
+    } else {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR)
+            .send({
+                message: "Failed to find profile."
+            });
+        return;
+    }
+});
+
 export default {
     getDashboard,
     updateBusinessInfo,
     findTransactions,
-    findTransactionById
+    findTransactionById,
+    getProfile
 };
