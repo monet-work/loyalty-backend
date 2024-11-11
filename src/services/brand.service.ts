@@ -349,14 +349,6 @@ const findTransactionById = async (
                     profilePictureURL: true,
                     brandSymbol: true
                 }
-            },
-            consumer: {
-                select: {
-                    name: true,
-                    countryCode: true,
-                    mobileNumber: true,
-                    profilePictureURL: true
-                }
             }
         },
         where: {
