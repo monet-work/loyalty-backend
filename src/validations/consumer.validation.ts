@@ -98,6 +98,20 @@ const linkedBrandAccount = {
     })
 };
 
+
+const findTransactions = {
+    params: Joi.object().keys({
+        consumerId: Joi.string().required()
+    })
+};
+
+const findTransaction = {
+    params: Joi.object().keys({
+        consumerId: Joi.string().required(),
+        transactionId: Joi.string().required()
+    })
+};
+
 export default {
     verifyOTP,
     signUp,
@@ -110,5 +124,7 @@ export default {
     transferPoints,
     brandAccounts,
     linkedBrandAccounts,
-    linkedBrandAccount
+    linkedBrandAccount,
+    findTransactions,
+    findTransaction
 };

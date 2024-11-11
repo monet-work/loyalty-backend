@@ -305,6 +305,60 @@ const linkedBrandAccount = catchAsync(async (req, res) => {
     }
 });
 
+
+const findTransactions = catchAsync(async (req, res) => {
+    const consumerId = (req.user as Consumer).id;
+
+    const transactions = await consumerService.findTransactions(consumerId);
+
+    if (transactions) {
+        // brand's email has been verified successfully
+        res.status(httpStatus.OK)
+            .send({
+                message: "Transactions fetched successfully.",
+                transactions
+            });
+        return;
+    } else {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR)
+            .send({
+                message: "Failed to find transactions. Try again later."
+            });
+        return;
+    }
+});
+
+const findTransactionById = catchAsync(async (req, res) => {
+    const consumerId = (req.user as Consumer).id;
+
+    const transactionId = req.params.transactionId;
+
+    const transaction = await consumerService.findTransactionById(transactionId);
+
+    if (transaction) {
+        // brand's email has been verified successfully
+        if (transaction.consumerId === consumerId) {
+            res.status(httpStatus.OK)
+                .send({
+                    message: "Transaction fetched successfully.",
+                    transaction
+                });
+            return;
+        }
+        res.status(httpStatus.UNAUTHORIZED)
+            .send({
+                message: "Consumer unauthorised to see this transaction",
+            });
+        return;
+    } else {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR)
+            .send({
+                message: "Failed to find transaction."
+            });
+        return;
+    }
+});
+
 export default {
     getDashboard,
     getDashboardDetails,
@@ -313,5 +367,7 @@ export default {
     transferPoints,
     brandAccounts,
     linkedBrandAccounts,
-    linkedBrandAccount
+    linkedBrandAccount,
+    findTransactions,
+    findTransactionById
 };

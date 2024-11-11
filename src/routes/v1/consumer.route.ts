@@ -69,6 +69,14 @@ router
     .route(CONSUMER_ROUTES.fetchDashboard)
     .get(consumerController.getDashboardDetails);
 
+router
+    .route(CONSUMER_ROUTES.findTransactions)
+    .get(auth('Consumer:findTransactions'), validate(consumerValidation.findTransactions), consumerController.findTransactions);
+
+router
+    .route(CONSUMER_ROUTES.findTransaction)
+    .get(auth('Consumer:findTransaction'), validate(consumerValidation.findTransaction), consumerController.findTransactionById);
+
 
 // router
 //     .route('/:customerId/points')

@@ -4,7 +4,7 @@ import httpStatus from 'http-status';
 import prisma from '../client';
 import ApiError from '../utils/ApiError';
 import { EXPIRY_DAYS_FOR_NEWLY_ISSUED_POINTS } from '../config/constants';
-import { PartialBrand } from '../config/brand-types';
+import { PartialBrand, PartialPointTransfer } from '../config/brand-types';
 import { BrandAdapter } from '../adapter/brand-adapter';
 import { ConsumerDashboardResponse } from '../config/consumer-types';
 import { uuidV4 } from 'web3-utils';
@@ -488,6 +488,83 @@ const insertSessionForConsumer = async (consumerId: string): Promise<ConsumerSes
     return consumerSession;
 }
 
+
+const findTransactions = async (
+    consumerId: string
+): Promise<PartialPointTransfer[] | null> => {
+    const transactions = await prisma.pointsTransfer.findMany({
+        select: {
+            fromBrand: {
+                select: {
+                    name: true,
+                    profilePictureURL: true,
+                    brandSymbol: true,
+                }
+            },
+            toBrand: {
+                select: {
+                    name: true,
+                    profilePictureURL: true,
+                    brandSymbol: true
+                }
+            },
+            id: true,
+            consumerId: true,
+            pointsTransferredFromA: true,
+            pointsTransferredToB: true
+        },
+        where: {
+            consumerId: consumerId
+        }
+    });
+
+    if (!transactions) {
+        throw new ApiError(httpStatus.NOT_FOUND, "Transactions not found");
+    }
+
+    return transactions;
+}
+
+const findTransactionById = async (
+    transactionId: string
+): Promise<PointsTransfer | null> => {
+    const transaction = await prisma.pointsTransfer.findFirst({
+        include: {
+            fromBrand: {
+                select: {
+                    name: true,
+                    profilePictureURL: true,
+                    brandSymbol: true
+                }
+            },
+            toBrand: {
+                select: {
+                    name: true,
+                    profilePictureURL: true,
+                    brandSymbol: true
+                }
+            },
+            consumer: {
+                select: {
+                    name: true,
+                    countryCode: true,
+                    mobileNumber: true,
+                    profilePictureURL: true
+                }
+            }
+        },
+        where: {
+            id: transactionId
+        }
+    });
+
+    if (!transaction) {
+        throw new ApiError(httpStatus.NOT_FOUND, "Transaction not found");
+    }
+
+    return transaction;
+}
+
 export default {
     getConsumerByMobileNumber,
     insertConsumer,
@@ -502,5 +579,7 @@ export default {
     findLinkedBrandAccountById,
     getDashboardDetails,
     findByDashboardSessionId,
-    insertSessionForConsumer
+    insertSessionForConsumer,
+    findTransactionById,
+    findTransactions
 };

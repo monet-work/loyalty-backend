@@ -29,6 +29,8 @@ const verifyCallback =
             const transferPointsMatch = req.originalUrl.match(/\/v1\/consumers\/([\w-]+)\/transfer-points$/);
             const brandAccountsMatch = req.originalUrl.match(/\/v1\/consumers\/([\w-]+)\/linked-brand-accounts$/);
             const linkedBrandAccount = req.originalUrl.match(/\/v1\/consumers\/([\w-]+)\/linked-brand-accounts\/([\w-]+)$/);
+            const consumerTransactionsMatch = req.originalUrl.match(/\/v1\/consumers\/([\w-]+)\/transactions$/);
+            const consumerTransactionMatch = req.originalUrl.match(/\/v1\/consumers\/([\w-]+)\/transactions\/([\w-]+)$/);
 
             if (!user) {
                 console.warn('Authentication failed:', info);
@@ -71,7 +73,7 @@ const verifyCallback =
 
                 resolve();
             } else {
-                const matchConsumer = linkBrandProfileMatch || verifyBrandProfileMatch || getBrandProfilesMatch || transferPointsMatch || brandAccountsMatch || linkedBrandAccount;
+                const matchConsumer = linkBrandProfileMatch || verifyBrandProfileMatch || getBrandProfilesMatch || transferPointsMatch || brandAccountsMatch || linkedBrandAccount || consumerTransactionsMatch || consumerTransactionMatch;
 
                 if (matchConsumer && user.id !== matchConsumer[1]) {
                     return reject(new ApiError(httpStatus.UNAUTHORIZED, 'Unauthorized access'));
