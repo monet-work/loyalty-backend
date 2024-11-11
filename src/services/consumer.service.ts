@@ -499,19 +499,23 @@ const findTransactions = async (
                     name: true,
                     profilePictureURL: true,
                     brandSymbol: true,
+                    conversionRate: true
                 }
             },
             toBrand: {
                 select: {
                     name: true,
                     profilePictureURL: true,
-                    brandSymbol: true
+                    brandSymbol: true,
+                    conversionRate: true
                 }
             },
             id: true,
             consumerId: true,
             pointsTransferredFromA: true,
-            pointsTransferredToB: true
+            pointsTransferredToB: true,
+            transferStatus: true
+
         },
         where: {
             consumerId: consumerId
