@@ -310,6 +310,7 @@ const findBrandsForProfile = async (consumerId: string): Promise<PartialBrand[] 
             profilePictureURL: true
         },
         where: {
+            isIntegrationCompleted: true,
             ConsumerBrandAccount: {
                 none: {
                     consumerId: consumerId,

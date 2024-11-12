@@ -54,10 +54,6 @@ router
     .get(auth('Consumer:brandAccounts'), validate(consumerValidation.brandAccounts), consumerController.brandAccounts);
 
 router
-    .route(CONSUMER_ROUTES.brandAccounts)
-    .get(auth('Consumer:brandAccounts'), validate(consumerValidation.brandAccounts), consumerController.brandAccounts);
-
-router
     .route(CONSUMER_ROUTES.linkedBrandAccounts)
     .get(auth('Consumer:linkedBrandAccounts'), validate(consumerValidation.linkedBrandAccounts), consumerController.linkedBrandAccounts);
 
