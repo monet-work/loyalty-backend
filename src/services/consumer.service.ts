@@ -193,7 +193,9 @@ const transferPoints = async (consumerId: string, fromBrandId: string, toBrandId
             brand: {
                 select: {
                     conversionRate: true,
-                    brandIndustry: true
+                    brandIndustry: true,
+                    parentBrand: true,
+                    allowExchangeUnderParent: true
                 }
             }
         },
@@ -213,7 +215,9 @@ const transferPoints = async (consumerId: string, fromBrandId: string, toBrandId
             brand: {
                 select: {
                     conversionRate: true,
-                    brandIndustry: true
+                    brandIndustry: true,
+                    parentBrand: true,
+                    allowExchangeUnderParent: true
                 }
             }
         },
@@ -228,9 +232,16 @@ const transferPoints = async (consumerId: string, fromBrandId: string, toBrandId
         throw new ApiError(httpStatus.NOT_FOUND, "Destination Brand not linked");
     }
 
-    if (fromBrand.brand.brandIndustry === toBrand.brand.brandIndustry) {
-        throw new ApiError(httpStatus.FORBIDDEN, "Points conversion not allowed in the same category");
-    }
+    if (fromBrand.brand.parentBrand && fromBrand.brand.parentBrand !== "" &&
+        toBrand.brand.parentBrand && toBrand.brand.parentBrand !== "" &&
+        fromBrand.brand.parentBrand === toBrand.brand.parentBrand) {
+            // same parent brands
+            if (!(fromBrand.brand.allowExchangeUnderParent && toBrand.brand.allowExchangeUnderParent)) {
+                throw new ApiError(httpStatus.FORBIDDEN, "Points conversion not allowed between these brands under the parent brand");
+            }
+        } else if (fromBrand.brand.brandIndustry === toBrand.brand.brandIndustry) {
+            throw new ApiError(httpStatus.FORBIDDEN, "Points conversion not allowed in the same category");
+        }
 
     const currentDate = new Date();
     const futureDate = new Date(currentDate);
