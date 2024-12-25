@@ -318,7 +318,9 @@ const findBrandsForProfile = async (consumerId: string): Promise<PartialBrand[] 
         select: {
             id: true,
             name: true,
-            profilePictureURL: true
+            profilePictureURL: true,
+            parentBrand: true,
+            allowExchangeUnderParent: true
         },
         where: {
             isIntegrationCompleted: true,
@@ -345,7 +347,9 @@ const findBrandAccounts = async (consumerId: string): Promise<ConsumerBrandAccou
                 select: {
                     id: true,
                     name: true,
-                    profilePictureURL: true
+                    profilePictureURL: true,
+                    parentBrand: true,
+                    allowExchangeUnderParent: true
                 }
             }
         },
