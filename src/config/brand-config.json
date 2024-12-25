@@ -115,6 +115,64 @@
                 }
             },
             "pointsArrayPath": "points"
+        }, 
+        "4af9b203-adc8-428e-8e8d-42ed8b19c0c6": {
+            "name": "Brand 5",
+            "api_base_url": "https://mongodb-typescript-api.onrender.com",
+            "endpoints": {
+                "getPoints": "/Company5/api/points_details",
+                "transferPoints": "/Company5/api/put"
+            },
+            "auth": {
+                "type": "bearer_token123",
+                "token_url": "https://api.brandA.com/oauth/token"
+            },
+            "schema": {
+                "points": "points",
+                "expiration_date": "expiry"
+            },
+            "customHeaders": {
+                "api-key": "fbljksdfghjklzxcvbnmqwertyuiopasdfg"
+            },
+            "queryParams": {
+                "phone": "{userId}"
+            },
+            "customBodyParams": {
+                "transferPoints": {
+                    "points": "{points}",
+                    "expiry": "{expiration_date}"
+                }
+            },
+            "pointsArrayPath": "points"
+        }, 
+        "4772befc-d77d-4980-ade6-c0be475e7f36": {
+            "name": "Brand 6",
+            "api_base_url": "https://mongodb-typescript-api.onrender.com",
+            "endpoints": {
+                "getPoints": "/Company6/api/points_details",
+                "transferPoints": "/Company6/api/put"
+            },
+            "auth": {
+                "type": "bearer_token123",
+                "token_url": "https://api.brandA.com/oauth/token"
+            },
+            "schema": {
+                "points": "points",
+                "expiration_date": "expiry"
+            },
+            "customHeaders": {
+                "api-key": "lkjhgfdsapoiuytrewqasdfghjklmnbvc"
+            },
+            "queryParams": {
+                "phone": "{userId}"
+            },
+            "customBodyParams": {
+                "transferPoints": {
+                    "points": "{points}",
+                    "expiry": "{expiration_date}"
+                }
+            },
+            "pointsArrayPath": "points"
         }
     }
 }

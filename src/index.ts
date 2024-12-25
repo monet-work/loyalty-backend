@@ -3,7 +3,7 @@ import app from './app';
 import prisma from './client';
 import config from './config/config';
 import logger from './config/logger';
-import redisClient from './config/redis';
+// import redisClient from './config/redis';
 import { sendOTP } from './utils/otpless';
 
 
@@ -49,7 +49,7 @@ prisma.$connect().then(() => {
 
 const servicesDisconnect = async () => {
   await prisma.$disconnect();
-  await redisClient.disconnect();
+  // await redisClient.disconnect();
 }
 
 process.on('SIGINT', async () => {
