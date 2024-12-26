@@ -2,7 +2,7 @@
     "brands": {
         "f7976afc-f169-4d10-a434-87734e82658e": {
             "name": "Brand A",
-            "api_base_url": "https://mongodb-typescript-api.onrender.com",
+            "api_base_url": "https://api.demo-brands.monet.work",
             "endpoints": {
                 "getPoints": "/Company1/api/points_details",
                 "transferPoints": "/Company1/api/put"
@@ -31,7 +31,7 @@
         },
         "39df89f9-ae63-444f-8dff-43effe86d52f": {
             "name": "Brand B",
-            "api_base_url": "https://mongodb-typescript-api.onrender.com",
+            "api_base_url": "https://api.demo-brands.monet.work",
             "endpoints": {
                 "getPoints": "/Company2/api/points_details",
                 "transferPoints": "/Company2/api/put"
@@ -60,7 +60,7 @@
         },
         "b1be31f7-40f6-4475-b04e-c8040ca60b4a": {
             "name": "Brand C",
-            "api_base_url": "https://mongodb-typescript-api.onrender.com",
+            "api_base_url": "https://api.demo-brands.monet.work",
             "endpoints": {
                 "getPoints": "/Company3/api/points_details",
                 "transferPoints": "/Company3/api/put"
@@ -89,7 +89,7 @@
         },
         "85769973-7c96-4a1d-8528-1e49859be24a": {
             "name": "Brand 4",
-            "api_base_url": "https://mongodb-typescript-api.onrender.com",
+            "api_base_url": "https://api.demo-brands.monet.work",
             "endpoints": {
                 "getPoints": "/Company4/api/points_details",
                 "transferPoints": "/Company4/api/put"
@@ -118,7 +118,7 @@
         }, 
         "4af9b203-adc8-428e-8e8d-42ed8b19c0c6": {
             "name": "Brand 5",
-            "api_base_url": "https://mongodb-typescript-api.onrender.com",
+            "api_base_url": "https://api.demo-brands.monet.work",
             "endpoints": {
                 "getPoints": "/Company5/api/points_details",
                 "transferPoints": "/Company5/api/put"
@@ -147,7 +147,7 @@
         }, 
         "4772befc-d77d-4980-ade6-c0be475e7f36": {
             "name": "Brand 6",
-            "api_base_url": "https://mongodb-typescript-api.onrender.com",
+            "api_base_url": "https://api.demo-brands.monet.work",
             "endpoints": {
                 "getPoints": "/Company6/api/points_details",
                 "transferPoints": "/Company6/api/put"
